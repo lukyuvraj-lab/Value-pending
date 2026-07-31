@@ -15,6 +15,30 @@ if uploaded_file is not None:
     # Read Excel
     df = pd.read_excel(uploaded_file)
 
+    # Plant Selection
+plants = sorted(df["Plant"].dropna().unique())
+selected_plant = st.selectbox("Select Plant", plants)
+
+# Filter selected plant
+elec = electrical_df[electrical_df["Plant"] == selected_plant]
+mech = mechanical_df[mechanical_df["Plant"] == selected_plant]
+
+# Calculate values
+elec_value = elec["Value in QualInsp."].sum()
+elec_grn = elec["GRN NO"].nunique()
+
+mech_value = mech["Value in QualInsp."].sum()
+mech_grn = mech["GRN NO"].nunique()
+
+# Show metrics
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("⚡ Electrical Value", f"₹ {elec_value:,.2f}")
+col2.metric("⚡ Electrical GRNs", elec_grn)
+
+col3.metric("🔧 Mechanical Value", f"₹ {mech_value:,.2f}")
+col4.metric("🔧 Mechanical GRNs", mech_grn)
+
     # Convert columns
     df["Material Group"] = pd.to_numeric(df["Material Group"], errors="coerce")
     df["Value in QualInsp."] = pd.to_numeric(

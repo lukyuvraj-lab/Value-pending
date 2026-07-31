@@ -113,7 +113,6 @@ if df.empty:
 
     summary = pd.concat([summary, total], ignore_index=True)
     col1, col2 = st.columns([4, 1])
-
 with col1:
     st.subheader("Plant-wise Pending Value")
 

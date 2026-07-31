@@ -329,14 +329,19 @@ pie_data = (
     .set_index("Department")
 )
 
-st.pyplot(
-    pie_data.plot.pie(
-        y="Value",
-        autopct="%1.1f%%",
-        legend=False,
-        ylabel=""
-    ).figure
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+
+ax.pie(
+    dept_summary["Value"],
+    labels=dept_summary["Department"],
+    autopct="%1.1f%%"
 )
+
+ax.set_title("Department-wise Pending Value")
+
+st.pyplot(fig)
 # =====================================================
 # SEARCH
 # =====================================================

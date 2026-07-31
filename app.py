@@ -295,6 +295,26 @@ st.dataframe(
 )
 
 # =====================================================
+# SEARCH
+# =====================================================
+
+st.markdown("---")
+st.subheader("🔍 Search")
+
+search = st.text_input(
+    "Search Material / GRN"
+).strip()
+
+display_df = filtered.copy()
+
+if search:
+    display_df = display_df[
+        display_df["Material"].str.contains(search, case=False, na=False)
+        |
+        display_df["GRN"].str.contains(search, case=False, na=False)
+    ]
+
+# =====================================================
 # DETAILED DATA
 # =====================================================
 
@@ -303,6 +323,7 @@ st.subheader("📋 Detailed Pending Data")
 
 # Create detail_df FIRST
 detail_df = (
+    display_df
     .groupby(["Plant", "Department", "GRN"], as_index=False)
     .agg(
         Value=("Value", "sum")

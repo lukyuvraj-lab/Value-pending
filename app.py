@@ -5,7 +5,6 @@ from datetime import datetime
 st.set_page_config(page_title="MB52 Pending Dashboard", layout="wide")
 
 st.title("📊 MB52 Pending Dashboard")
-st.write(f"📅 Date: {datetime.now().strftime('%d-%m-%Y')}")
 
 uploaded_file = st.file_uploader(
     "Upload MB52 Excel File",
@@ -112,6 +111,13 @@ if uploaded_file is not None:
     })
 
     summary = pd.concat([summary, total], ignore_index=True)
+    col1, col2 = st.columns([4, 1])
+
+with col1:
+    st.subheader("Plant-wise Pending Value")
+
+with col2:
+    st.markdown(f"**📅 {datetime.now().strftime('%d-%m-%Y')}**")
 
     st.subheader("Plant-wise Pending Value")
     st.dataframe(summary, use_container_width=True)

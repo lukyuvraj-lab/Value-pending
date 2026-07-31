@@ -172,6 +172,11 @@ selected_material = st.sidebar.selectbox(
     material_list
 )
 
+selected_grn = st.sidebar.selectbox(
+    "📄 GRN",
+    grn_list
+)
+
 # -----------------------------
 # Apply Filters
 # -----------------------------

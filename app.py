@@ -295,30 +295,6 @@ st.dataframe(
 )
 
 # =====================================================
-# PIE CHART
-# =====================================================
-st.markdown("---")
-st.subheader("🥧 Department-wise Pending Value")
-
-pie_data = (
-    dept_summary
-    .set_index("Department")
-)
-
-import matplotlib.pyplot as plt
-
-fig, ax = plt.subplots()
-
-ax.pie(
-    dept_summary["Value"],
-    labels=dept_summary["Department"],
-    autopct="%1.1f%%"
-)
-
-ax.set_title("Department-wise Pending Value")
-
-st.pyplot(fig)
-# =====================================================
 # SEARCH
 # =====================================================
 

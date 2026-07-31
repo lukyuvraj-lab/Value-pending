@@ -116,52 +116,52 @@ if uploaded_file is not None:
     st.subheader("Plant-wise Pending Value")
     st.dataframe(summary, use_container_width=True)
 
-# Add GRN and Currency columns
-df["GRN"] = df.iloc[:, GRN].fillna("").astype(str).str.strip()
-df["Currency"] = df.iloc[:, 13].fillna("").astype(str).str.strip()   # Column N
+    # Add GRN and Currency columns
+    df["GRN"] = df.iloc[:, GRN].fillna("").astype(str).str.strip()
+    df["Currency"] = df.iloc[:, 13].fillna("").astype(str).str.strip()   # Column N
 
-filtered = df.copy()
+    filtered = df.copy()
 
-if selected_plant != "All Plants":
-    filtered = filtered[filtered["Plant"] == selected_plant]
+    if selected_plant != "All Plants":
+        filtered = filtered[filtered["Plant"] == selected_plant]
 
-if selected_dept != "All":
-    filtered = filtered[filtered["Department"] == selected_dept]
+    if selected_dept != "All":
+        filtered = filtered[filtered["Department"] == selected_dept]
 
-# ---------- KPI Cards ----------
-col1, col2, col3, col4 = st.columns(4)
+    # ---------- KPI Cards ----------
+    col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("💰 Pending Value", f"{filtered['Value'].sum():,.2f}")
-col2.metric("📄 GRN Count", filtered["GRN"].nunique())
-col3.metric("📦 Lot Count", len(filtered))
-col4.metric("🏭 Plants", filtered["Plant"].nunique())
+    col1.metric("💰 Pending Value", f"{filtered['Value'].sum():,.2f}")
+    col2.metric("📄 GRN Count", filtered["GRN"].nunique())
+    col3.metric("📦 Lot Count", len(filtered))
+    col4.metric("🏭 Plants", filtered["Plant"].nunique())
 
-# ---------- Summary ----------
-summary = (
-    filtered.groupby(["Plant", "Department"])
-    .agg(
-        GRN_Count=("GRN", "nunique"),
-        Lot_Count=("GRN", "size"),
-        Pending_Value=("Value", "sum"),
-        Currency=("Currency", "first")
+    # ---------- Summary ----------
+    summary = (
+        filtered.groupby(["Plant", "Department"])
+        .agg(
+            GRN_Count=("GRN", "nunique"),
+            Lot_Count=("GRN", "size"),
+            Pending_Value=("Value", "sum"),
+            Currency=("Currency", "first"),
+        )
+        .reset_index()
     )
-    .reset_index()
-)
 
-# Total Row
-total = pd.DataFrame({
-    "Plant": ["TOTAL"],
-    "Department": [""],
-    "GRN_Count": [summary["GRN_Count"].sum()],
-    "Lot_Count": [summary["Lot_Count"].sum()],
-    "Pending_Value": [summary["Pending_Value"].sum()],
-    "Currency": [""]
-})
+    # Total Row
+    total = pd.DataFrame({
+        "Plant": ["TOTAL"],
+        "Department": [""],
+        "GRN_Count": [summary["GRN_Count"].sum()],
+        "Lot_Count": [summary["Lot_Count"].sum()],
+        "Pending_Value": [summary["Pending_Value"].sum()],
+        "Currency": [""],
+    })
 
-summary = pd.concat([summary, total], ignore_index=True)
+    summary = pd.concat([summary, total], ignore_index=True)
 
-st.subheader("Plant & Department Wise Pending Summary")
-st.dataframe(summary, use_container_width=True)
+    st.subheader("Plant & Department Wise Pending Summary")
+    st.dataframe(summary, use_container_width=True)
 
 else:
     st.info("Please upload the MB52 Excel file.")

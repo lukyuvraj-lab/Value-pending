@@ -237,6 +237,16 @@ plant_summary = pd.concat(
     ignore_index=True
 )
 
+# Add Serial Number
+plant_summary.insert(0, "SL.No", "")
+
+# Fill serial numbers except TOTAL row
+serial = 1
+for i in plant_summary.index:
+    if str(plant_summary.loc[i, "Plant"]).strip().upper() != "TOTAL":
+        plant_summary.loc[i, "S.No"] = serial
+        serial += 1
+        
 st.dataframe(
     plant_summary,
     use_container_width=True

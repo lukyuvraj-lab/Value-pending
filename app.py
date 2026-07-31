@@ -46,7 +46,15 @@ if uploaded_file is not None:
 
     # ---------------- Filters ----------------
     # Plant Filter
-plants = ["All Plants"] + sorted(df.iloc[:, 2].astype(str).str.strip().unique().tolist())
+plants = (
+    df.iloc[:, 2]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+plants = [p for p in plants.unique().tolist() if p != ""]
+plants = ["All Plants"] + plants
 selected_plant = st.selectbox("Select Plant", plants)
 
 # Department Filter

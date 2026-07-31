@@ -70,9 +70,9 @@ if len(df.columns) <= VALUE:
 # Prepare Data
 # -----------------------------
 df["Material"] = (
-    pd.to_numeric(df.iloc[:, MATERIAL], errors="coerce")
-    .fillna(0)
+  df.iloc[:, MATERIAL]
     .astype(str)
+    .str.replace(".0", "", regex=False)
     .str.strip()
 )
 

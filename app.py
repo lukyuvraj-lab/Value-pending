@@ -337,3 +337,90 @@ st.pyplot(
         ylabel=""
     ).figure
 )
+# =====================================================
+# SEARCH
+# =====================================================
+
+st.markdown("---")
+st.subheader("🔍 Search")
+
+search = st.text_input(
+    "Search Material / GRN"
+).strip()
+
+display_df = filtered.copy()
+
+if search:
+    display_df = display_df[
+        display_df["Material"].str.contains(search, case=False, na=False)
+        |
+        display_df["GRN"].str.contains(search, case=False, na=False)
+    ]
+
+# =====================================================
+# DETAILED DATA
+# =====================================================
+
+st.markdown("---")
+st.subheader("📋 Detailed Pending Data")
+
+show_columns = [
+    "Material",
+    "Plant",
+    "Department",
+    "GRN",
+    "Currency",
+    "Value"
+]
+
+st.dataframe(
+    display_df[show_columns],
+    use_container_width=True,
+    height=500
+)
+
+# =====================================================
+# DOWNLOAD SUMMARY
+# =====================================================
+
+st.markdown("---")
+
+download_df = summary.copy()
+
+excel_data = download_df.to_csv(index=False).encode("utf-8")
+
+st.download_button(
+    label="📥 Download Summary",
+    data=excel_data,
+    file_name=f"MB52_Pending_{datetime.now().strftime('%d%m%Y')}.csv",
+    mime="text/csv"
+)
+
+# =====================================================
+# DOWNLOAD DETAIL
+# =====================================================
+
+detail_csv = display_df.to_csv(index=False).encode("utf-8")
+
+st.download_button(
+    label="📥 Download Detailed Data",
+    data=detail_csv,
+    file_name=f"MB52_Detail_{datetime.now().strftime('%d%m%Y')}.csv",
+    mime="text/csv"
+)
+
+# =====================================================
+# FOOTER
+# =====================================================
+
+st.markdown("---")
+
+st.caption(
+    f"""
+MB52 Pending Dashboard
+
+Records : {len(display_df):,}
+
+Generated : {datetime.now().strftime('%d-%m-%Y %H:%M')}
+"""
+)

@@ -2,178 +2,192 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-st.set_page_config(page_title="MB52 Pending Dashboard", layout="wide")
+# -----------------------------
+# Page Configuration
+# -----------------------------
+st.set_page_config(
+    page_title="MB52 Pending Dashboard",
+    page_icon="📊",
+    layout="wide"
+)
 
-st.title("📊 MB52 Pending Dashboard")
+# -----------------------------
+# Title
+# -----------------------------
+col1, col2 = st.columns([5, 1])
 
+with col1:
+    st.title("📊 MB52 Pending Dashboard")
+
+with col2:
+    st.markdown(
+        f"### 📅 {datetime.now().strftime('%d-%m-%Y')}"
+    )
+
+# -----------------------------
+# Upload Excel
+# -----------------------------
 uploaded_file = st.file_uploader(
-    "Upload MB52 Excel File",
+    "📂 Upload MB52 Excel File",
     type=["xlsx", "xls"]
 )
 
 if uploaded_file is None:
-    st.info("Please upload the MB52 Excel file.")
+    st.info("Please upload an MB52 Excel file.")
     st.stop()
 
-df = pd.read_excel(uploaded_file)
-
-st.success("✅ File uploaded successfully")
-st.write("Rows:", len(df))
-st.write("Columns:", len(df.columns))
-st.dataframe(df.head())
+# -----------------------------
+# Read Excel
+# -----------------------------
+try:
+    df = pd.read_excel(uploaded_file)
+except Exception as e:
+    st.error(f"Unable to read Excel file.\n\n{e}")
+    st.stop()
 
 if df.empty:
     st.error("Uploaded file is empty.")
     st.stop()
 
-    # Column Positions
-    MATERIAL = 0      # Column A
-    PLANT = 2         # Column C
-    GRN = 8           # Column I
-    VALUE = 19        # Column T
+# -----------------------------
+# Required Column Positions
+# -----------------------------
+MATERIAL = 0
+PLANT = 2
+GRN = 8
+CURRENCY = 13
+VALUE = 19
 
-    # Read columns
-    material = df.iloc[:, MATERIAL].fillna("").astype(str).str.strip()
-    plant = df.iloc[:, PLANT].fillna("").astype(str).str.strip()
-    value = pd.to_numeric(
-        df.iloc[:, VALUE],
-        errors="coerce"
-    ).fillna(0)
-
-    # Store back in dataframe
-    df["Plant"] = plant
-    df["Value"] = value
-
-    # Department Function
-    def get_department(mat):
-        mat = str(mat)
-
-        if (
-            mat.startswith("1000")
-            or mat.startswith("385")
-            or mat.startswith("44")
-            or mat.startswith("45")
-            or mat.startswith("46")
-            or mat.startswith("485")
-            or mat.startswith("63")
-        ):
-            return "Electrical"
-        else:
-            return "Mechanical"
-
-    df["Department"] = material.apply(get_department)
-    st.write("Step 1 ✅")
-
-    # Filters
-    plants = ["All Plants"] + sorted(df["Plant"].dropna().unique().tolist())
-
-    selected_plant = st.selectbox(
-        "🏭 Select Plant",
-        plants
+# Validate column count
+if len(df.columns) <= VALUE:
+    st.error(
+        "Excel format is incorrect.\n"
+        "Pending Value column (T) not found."
     )
+    st.stop()
 
-    selected_dept = st.selectbox(
-        "Department",
-        st.write("Step 2 ✅")
-        ["All", "Electrical", "Mechanical"]
-    )
+# -----------------------------
+# Prepare Data
+# -----------------------------
+df["Material"] = (
+    df.iloc[:, MATERIAL]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
 
-    filtered = df.copy()
-    st.write("Step 3 ✅")
+df["Plant"] = (
+    df.iloc[:, PLANT]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
 
-    if selected_plant != "All Plants":
-        filtered = filtered[
-            filtered["Plant"] == selected_plant
-        ]
+df["GRN"] = (
+    df.iloc[:, GRN]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
 
-    if selected_dept != "All":
-        filtered = filtered[
-            filtered["Department"] == selected_dept
-        ]
+df["Currency"] = (
+    df.iloc[:, CURRENCY]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
 
-    # Summary
-    summary = (
-        filtered.groupby(["Plant", "Department"])["Value"]
-        .sum()
-        .unstack(fill_value=0)
-        .reset_index()
-    )
-    st.write("Step 4 ✅")
-st.dataframe(summary)
+df["Value"] = pd.to_numeric(
+    df.iloc[:, VALUE],
+    errors="coerce"
+).fillna(0)
 
-    if "Electrical" not in summary.columns:
-        summary["Electrical"] = 0
+# -----------------------------
+# Department Logic
+# -----------------------------
+def get_department(material):
 
-    if "Mechanical" not in summary.columns:
-        summary["Mechanical"] = 0
+    material = str(material)
 
-    summary.rename(
-        columns={
-            "Electrical": "⚡ Electrical Value",
-            "Mechanical": "🔧 Mechanical Value",
-        },
-        inplace=True,
-    )
+    if (
+        material.startswith("1000")
+        or material.startswith("385")
+        or material.startswith("44")
+        or material.startswith("45")
+        or material.startswith("46")
+        or material.startswith("485")
+        or material.startswith("63")
+    ):
+        return "Electrical"
 
-    total = pd.DataFrame({
-        "Plant": ["TOTAL"],
-        "⚡ Electrical Value": [summary["⚡ Electrical Value"].sum()],
-        "🔧 Mechanical Value": [summary["🔧 Mechanical Value"].sum()],
-    })
+    return "Mechanical"
 
-    summary = pd.concat([summary, total], ignore_index=True)
-    col1, col2 = st.columns([4, 1])
+df["Department"] = df["Material"].apply(get_department)
 
-    st.subheader("Plant-wise Pending Value")
+# -----------------------------
+# Sidebar Filters
+# -----------------------------
+st.sidebar.header("Filters")
 
-    st.markdown(f"**📅 {datetime.now().strftime('%d-%m-%Y')}**")
+plant_list = ["All Plants"] + sorted(
+    df["Plant"].dropna().unique().tolist()
+)
 
-    st.subheader("Plant-wise Pending Value")
-    st.dataframe(summary, use_container_width=True)
+dept_list = [
+    "All",
+    "Electrical",
+    "Mechanical"
+]
 
-    # Add GRN and Currency columns
-    df["GRN"] = df.iloc[:, GRN].fillna("").astype(str).str.strip()
-    df["Currency"] = df.iloc[:, 13].fillna("").astype(str).str.strip()   # Column N
+material_list = ["All"] + sorted(
+    df["Material"].dropna().unique().tolist()
+)
 
-    filtered = df.copy()
+grn_list = ["All"] + sorted(
+    df["GRN"].dropna().unique().tolist()
+)
 
-    if selected_plant != "All Plants":
-        filtered = filtered[filtered["Plant"] == selected_plant]
+selected_plant = st.sidebar.selectbox(
+    "🏭 Plant",
+    plant_list
+)
 
-    if selected_dept != "All":
-        filtered = filtered[filtered["Department"] == selected_dept]
+selected_department = st.sidebar.selectbox(
+    "⚙️ Department",
+    dept_list
+)
 
-    # ---------- KPI Cards ----------
-    col1, col2, col3, col4 = st.columns(4)
+selected_material = st.sidebar.selectbox(
+    "📦 Material",
+    material_list
+)
 
-    col1.metric("💰 Pending Value", f"{filtered['Value'].sum():,.2f}")
-    col2.metric("📄 GRN Count", filtered["GRN"].nunique())
-    col3.metric("📦 Lot Count", len(filtered))
-    col4.metric("🏭 Plants", filtered["Plant"].nunique())
+selected_grn = st.sidebar.selectbox(
+    "📄 GRN",
+    grn_list
+)
 
-    # ---------- Summary ----------
-    summary = (
-        filtered.groupby(["Plant", "Department"])
-        .agg(
-            GRN_Count=("GRN", "nunique"),
-            Lot_Count=("GRN", "size"),
-            Pending_Value=("Value", "sum"),
-            Currency=("Currency", "first"),
-        )
-        .reset_index()
-    )
+# -----------------------------
+# Apply Filters
+# -----------------------------
+filtered = df.copy()
 
-    # Total Row
-    total = pd.DataFrame({
-        "Plant": ["TOTAL"],
-        "Department": [""],
-        "GRN_Count": [summary["GRN_Count"].sum()],
-        "Lot_Count": [summary["Lot_Count"].sum()],
-        "Pending_Value": [summary["Pending_Value"].sum()],
-        "Currency": [""],
-    })
+if selected_plant != "All Plants":
+    filtered = filtered[
+        filtered["Plant"] == selected_plant
+    ]
 
-    summary = pd.concat([summary, total], ignore_index=True)
+if selected_department != "All":
+    filtered = filtered[
+        filtered["Department"] == selected_department
+    ]
 
-    st.subheader("Plant & Department Wise Pending Summary")
-    st.dataframe(summary, use_container_width=True)
+if selected_material != "All":
+    filtered = filtered[
+        filtered["Material"] == selected_material
+    ]
+
+if selected_grn != "All":
+    filtered = filtered[
+        filtered["GRN"] == selected_grn
+    ]

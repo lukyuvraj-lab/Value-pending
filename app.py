@@ -224,17 +224,25 @@ st.subheader("🏭 Plant-wise Pending Value")
 
 plant_summary = plant_summary.reset_index(drop=True)
 
-plant_summary.insert(0, "S.No.", "")
+# Plant-wise Pending Value
 
+plant_summary = plant_summary.reset_index(drop=True)
+
+# Add Serial Number column
+plant_summary["S.No."] = ""
+
+# Fill serial numbers
 for i in range(len(plant_summary)):
-
-    if str(plant_summary.loc[i, "Plant"]).strip().upper() != "TOTAL":
-
+    if str(plant_summary.loc[i, "Plant"]).upper() == "TOTAL":
+        plant_summary.loc[i, "S.No."] = ""
+    else:
         plant_summary.loc[i, "S.No."] = i + 1
 
-    else:
+# Move S.No. to first column
+cols = ["S.No."] + [c for c in plant_summary.columns if c != "S.No."]
+plant_summary = plant_summary[cols]
 
-        plant_summary.loc[i, "S.No."] = ""
+st.dataframe(plant_summary, use_container_width=True)
 
 st.dataframe(plant_summary, use_container_width=True)
 

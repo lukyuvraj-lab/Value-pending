@@ -379,12 +379,17 @@ if search:
 st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
-show_columns = [
-    "Plant",
-    "Department",
-    "GRN",
-    "Value"
-]
+detail_df = (
+
+    display_df
+
+    .groupby(["Plant", "Department", "GRN"], as_index=False)
+
+    .agg(
+
+        Value=("Value", "sum")
+    )
+)
 
 st.dataframe(
     display_df[show_columns],

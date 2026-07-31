@@ -169,5 +169,3 @@ with col2:
 
     st.subheader("Plant & Department Wise Pending Summary")
     st.dataframe(summary, use_container_width=True)
-
-else:

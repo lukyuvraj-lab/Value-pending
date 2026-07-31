@@ -77,22 +77,22 @@ df["Material"] = (
 )
 
 df["Plant"] = (
-    df.iloc[:, PLANT]
-    .fillna("")
+    pd.to_numeric(df.iloc[:, PLANT], errors="coerce")
+    .fillna(0)
     .astype(str)
     .str.strip()
 )
 
 df["GRN"] = (
-    df.iloc[:, GRN]
-    .fillna("")
+    pd.to_numeric(df.iloc[:, GRN], errors="coerce")
+    .fillna(0)
     .astype(str)
     .str.strip()
 )
 
 df["Currency"] = (
-    df.iloc[:, CURRENCY]
-    .fillna("")
+    pd.to_numeric(df.iloc[:, CURRENCY], errors="coerce")
+    .fillna(0)
     .astype(str)
     .str.strip()
 )

@@ -63,15 +63,6 @@ if uploaded_file is not None:
     if selected_dept != "All":
         filtered = filtered[
             filtered["Department"] == selected_dept
-        ]
-if selected_plant != "All Plants":
-    filtered = filtered[
-        filtered.iloc[:, 2].astype(str).str.strip() == selected_plant
-    ]
-
-if selected_dept != "All":
-    filtered = filtered[
-        filtered["Department"] == selected_dept
     ]
 
     # ---------------- Summary ----------------

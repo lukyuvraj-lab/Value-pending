@@ -191,3 +191,149 @@ if selected_grn != "All":
     filtered = filtered[
         filtered["GRN"] == selected_grn
     ]
+    # =====================================================
+# KPI CARDS
+# =====================================================
+st.markdown("---")
+st.subheader("📌 Dashboard Overview")
+
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
+total_value = filtered["Value"].sum()
+grn_count = filtered["GRN"].nunique()
+lot_count = len(filtered)
+plant_count = filtered["Plant"].nunique()
+
+kpi1.metric(
+    "💰 Pending Value",
+    f"{total_value:,.2f}"
+)
+
+kpi2.metric(
+    "📄 GRN Count",
+    grn_count
+)
+
+kpi3.metric(
+    "📦 Lot Count",
+    lot_count
+)
+
+kpi4.metric(
+    "🏭 Plants",
+    plant_count)
+
+# =====================================================
+# PLANT WISE SUMMARY
+# =====================================================
+st.markdown("---")
+st.subheader("🏭 Plant-wise Pending Value")
+
+plant_summary = (
+    filtered
+    .groupby("Plant", as_index=False)["Value"]
+    .sum()
+    .sort_values("Value", ascending=False)
+)
+
+total_row = pd.DataFrame({
+    "Plant": ["TOTAL"],
+    "Value": [plant_summary["Value"].sum()]
+})
+
+plant_summary = pd.concat(
+    [plant_summary, total_row],
+    ignore_index=True
+)
+
+st.dataframe(
+    plant_summary,
+    use_container_width=True
+)
+
+# =====================================================
+# DEPARTMENT SUMMARY
+# =====================================================
+st.markdown("---")
+st.subheader("⚙️ Department-wise Pending Value")
+
+dept_summary = (
+    filtered
+    .groupby("Department", as_index=False)["Value"]
+    .sum()
+)
+
+st.dataframe(
+    dept_summary,
+    use_container_width=True
+)
+
+# =====================================================
+# PLANT + DEPARTMENT SUMMARY
+# =====================================================
+st.markdown("---")
+st.subheader("📊 Plant & Department Summary")
+
+summary = (
+    filtered
+    .groupby(["Plant", "Department"])
+    .agg(
+        GRN_Count=("GRN", "nunique"),
+        Lot_Count=("GRN", "count"),
+        Pending_Value=("Value", "sum")
+    )
+    .reset_index()
+)
+
+total = pd.DataFrame({
+    "Plant": ["TOTAL"],
+    "Department": [""],
+    "GRN_Count": [summary["GRN_Count"].sum()],
+    "Lot_Count": [summary["Lot_Count"].sum()],
+    "Pending_Value": [summary["Pending_Value"].sum()]
+})
+
+summary = pd.concat(
+    [summary, total],
+    ignore_index=True
+)
+
+st.dataframe(
+    summary,
+    use_container_width=True
+)
+
+# =====================================================
+# BAR CHART
+# =====================================================
+st.markdown("---")
+st.subheader("📈 Plant-wise Pending Value Chart")
+
+chart_data = (
+    plant_summary[
+        plant_summary["Plant"] != "TOTAL"
+    ]
+    .set_index("Plant")
+)
+
+st.bar_chart(chart_data["Value"])
+
+# =====================================================
+# PIE CHART
+# =====================================================
+st.markdown("---")
+st.subheader("🥧 Department-wise Pending Value")
+
+pie_data = (
+    dept_summary
+    .set_index("Department")
+)
+
+st.pyplot(
+    pie_data.plot.pie(
+        y="Value",
+        autopct="%1.1f%%",
+        legend=False,
+        ylabel=""
+    ).figure
+)

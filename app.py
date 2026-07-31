@@ -17,6 +17,11 @@ if uploaded_file is None:
 
 df = pd.read_excel(uploaded_file)
 
+st.success("✅ File uploaded successfully")
+st.write("Rows:", len(df))
+st.write("Columns:", len(df.columns))
+st.dataframe(df.head())
+
 if df.empty:
     st.error("Uploaded file is empty.")
     st.stop()

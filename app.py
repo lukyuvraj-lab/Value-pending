@@ -55,7 +55,6 @@ if df.empty:
 MATERIAL = 0
 PLANT = 2
 GRN = 8
-CURRENCY = 13
 VALUE = 19
 
 # Validate column count

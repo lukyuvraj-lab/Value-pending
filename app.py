@@ -1,93 +1,87 @@
 import streamlit as st
 import pandas as pd
+from datetime import date
 
-st.set_page_config(page_title="Pending Dashboard", layout="wide")
+st.set_page_config(page_title="MB52 Pending Dashboard", layout="wide")
 
 st.title("📊 MB52 Pending Dashboard")
+st.write("📅 Date :", date.today().strftime("%d-%m-%Y"))
 
 uploaded_file = st.file_uploader("Upload MB52 Excel File", type=["xlsx", "xls"])
 
 if uploaded_file is not None:
 
-    # Read Excel
     df = pd.read_excel(uploaded_file)
 
     # Convert required columns
-    df["Material Group"] = pd.to_numeric(df["Material Group"], errors="coerce")
-    df["Value in QualInsp."] = pd.to_numeric(df["Value in QualInsp."], errors="coerce").fillna(0)
+    df["Material"] = df["Material"].astype(str)
+    df["Value in QualInsp."] = pd.to_numeric(
+        df["Value in QualInsp."], errors="coerce"
+    ).fillna(0)
 
-    # Electrical Material Groups
-    electrical_groups = [10096, 10097, 10098, 10103, 10104, 10113]
+    # Function to identify department
+    def department(material):
+        material = str(material).strip()
 
-    # Separate Electrical & Mechanical
-    electrical_df = df[df["Material Group"].isin(electrical_groups)]
-    mechanical_df = df[~df["Material Group"].isin(electrical_groups)]
+        if (
+            material.startswith("1000")
+            or material.startswith("385")
+            or material.startswith("44")
+            or material.startswith("45")
+            or material.startswith("46")
+            or material.startswith("485")
+            or material.startswith("63")
+        ):
+            return "Electrical"
+        else:
+            return "Mechanical"
 
-    # Plant Selection
-    plants = ["All Plants"] + sorted(df["Plant"].dropna().astype(str).unique())
+    # Create Department column
+    df["Department"] = df["Material"].apply(department)
+
+    # Filters
+    plants = ["All Plants"] + sorted(df["Plant"].astype(str).unique())
     selected_plant = st.selectbox("🏭 Select Plant", plants)
 
-    if selected_plant == "All Plants":
-        elec = electrical_df
-        mech = mechanical_df
-    else:
-        elec = electrical_df[electrical_df["Plant"].astype(str) == selected_plant]
-        mech = mechanical_df[mechanical_df["Plant"].astype(str) == selected_plant]
+    departments = ["All", "Electrical", "Mechanical"]
+    selected_dept = st.selectbox("Department", departments)
 
-    # Department Totals
-    elec_value = elec["Value in QualInsp."].sum()
-    elec_grn = elec["GRN NO"].nunique()
+    filtered = df.copy()
 
-    mech_value = mech["Value in QualInsp."].sum()
-    mech_grn = mech["GRN NO"].nunique()
+    if selected_plant != "All Plants":
+        filtered = filtered[filtered["Plant"].astype(str) == selected_plant]
 
-    # Metrics
-    col1, col2, col3, col4 = st.columns(4)
+    if selected_dept != "All":
+        filtered = filtered[filtered["Department"] == selected_dept]
 
-    col1.metric("⚡ Electrical Value", f"₹ {elec_value:,.2f}")
-    col2.metric("⚡ Electrical GRNs", elec_grn)
-    col3.metric("🔧 Mechanical Value", f"₹ {mech_value:,.2f}")
-    col4.metric("🔧 Mechanical GRNs", mech_grn)
-
-    st.divider()
-
-    # Electrical Plant-wise Summary
-    st.subheader("⚡ Electrical Plant-wise Summary")
-
-    electrical_summary = (
-        elec.groupby("Plant")
-        .agg(
-            Pending_GRN_Count=("GRN NO", "nunique"),
-            Pending_Value=("Value in QualInsp.", "sum")
+    # Plant-wise Summary
+    summary = (
+        filtered.pivot_table(
+            index="Plant",
+            columns="Department",
+            values="Value in QualInsp.",
+            aggfunc="sum",
+            fill_value=0,
         )
         .reset_index()
     )
 
-    electrical_summary["Pending_Value"] = electrical_summary["Pending_Value"].map(
-        lambda x: f"₹ {x:,.2f}"
+    if "Electrical" not in summary.columns:
+        summary["Electrical"] = 0
+
+    if "Mechanical" not in summary.columns:
+        summary["Mechanical"] = 0
+
+    summary.rename(
+        columns={
+            "Electrical": "⚡ Electrical Value",
+            "Mechanical": "🔧 Mechanical Value",
+        },
+        inplace=True,
     )
 
-    st.dataframe(electrical_summary, use_container_width=True)
-
-    st.divider()
-
-    # Mechanical Plant-wise Summary
-    st.subheader("🔧 Mechanical Plant-wise Summary")
-
-    mechanical_summary = (
-        mech.groupby("Plant")
-        .agg(
-            Pending_GRN_Count=("GRN NO", "nunique"),
-            Pending_Value=("Value in QualInsp.", "sum")
-        )
-        .reset_index()
-    )
-
-    mechanical_summary["Pending_Value"] = mechanical_summary["Pending_Value"].map(
-        lambda x: f"₹ {x:,.2f}"
-    )
-
-    st.dataframe(mechanical_summary, use_container_width=True)
+    st.subheader("Plant Wise Pending Value")
+    st.dataframe(summary, use_container_width=True)
 
 else:
-    st.info("Please upload the MB52 Excel file.")
+    st.info("Upload the MB52 Excel file.")

@@ -11,7 +11,12 @@ uploaded_file = st.file_uploader(
     type=["xlsx", "xls"]
 )
 
-if uploaded_file is not None:
+if uploaded_file is None:
+    st.info("Please upload the MB52 Excel file.")
+    st.stop()
+
+# Rest of your code starts here
+df = pd.read_excel(uploaded_file)
 
     # Read Excel
     df = pd.read_excel(uploaded_file)
@@ -170,4 +175,3 @@ with col2:
     st.dataframe(summary, use_container_width=True)
 
 else:
-    st.info("Please upload the MB52 Excel file.")

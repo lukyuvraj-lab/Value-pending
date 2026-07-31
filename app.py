@@ -336,8 +336,6 @@ ax.pie(
 
 ax.set_title("Department-wise Pending Value")
 
-st.pyplot(fig)
-
 # =====================================================
 # DETAILED DATA
 # =====================================================

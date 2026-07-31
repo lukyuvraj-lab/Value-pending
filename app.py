@@ -295,19 +295,6 @@ st.dataframe(
 )
 
 # =====================================================
-# SEARCH
-# =====================================================
-
-display_df = filtered.copy()
-
-if search:
-    display_df = display_df[
-        display_df["Material"].str.contains(search, case=False, na=False)
-        |
-        display_df["GRN"].str.contains(search, case=False, na=False)
-    ]
-
-# =====================================================
 # DETAILED DATA
 # =====================================================
 

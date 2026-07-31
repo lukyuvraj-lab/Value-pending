@@ -15,13 +15,11 @@ if uploaded_file is None:
     st.info("Please upload the MB52 Excel file.")
     st.stop()
 
-# Rest of your code starts here
 df = pd.read_excel(uploaded_file)
 
-    # Read Excel
-    if df.empty:
-        st.error("Uploaded file is empty.")
-        st.stop()
+if df.empty:
+    st.error("Uploaded file is empty.")
+    st.stop()
 
     # Column Positions
     MATERIAL = 0      # Column A

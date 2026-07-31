@@ -167,11 +167,6 @@ selected_department = st.sidebar.selectbox(
     dept_list
 )
 
-selected_material = st.sidebar.selectbox(
-    "📦 Material",
-    material_list
-)
-
 selected_grn = st.sidebar.selectbox(
     "📄 GRN",
     grn_list
@@ -190,11 +185,6 @@ if selected_plant != "All Plants":
 if selected_department != "All":
     filtered = filtered[
         filtered["Department"] == selected_department
-    ]
-
-if selected_material != "All":
-    filtered = filtered[
-        filtered["Material"] == selected_material
     ]
 
 if selected_grn != "All":

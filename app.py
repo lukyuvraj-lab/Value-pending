@@ -62,6 +62,7 @@ if df.empty:
             return "Mechanical"
 
     df["Department"] = material.apply(get_department)
+    st.write("Step 1 ✅")
 
     # Filters
     plants = ["All Plants"] + sorted(df["Plant"].dropna().unique().tolist())
@@ -73,10 +74,12 @@ if df.empty:
 
     selected_dept = st.selectbox(
         "Department",
+        st.write("Step 2 ✅")
         ["All", "Electrical", "Mechanical"]
     )
 
     filtered = df.copy()
+    st.write("Step 3 ✅")
 
     if selected_plant != "All Plants":
         filtered = filtered[
@@ -95,6 +98,8 @@ if df.empty:
         .unstack(fill_value=0)
         .reset_index()
     )
+    st.write("Step 4 ✅")
+st.dataframe(summary)
 
     if "Electrical" not in summary.columns:
         summary["Electrical"] = 0

@@ -220,10 +220,6 @@ kpi4.metric(
 st.markdown("---")
 st.subheader("🏭 Plant-wise Pending Value")
 
-# Add serial number
-
-plant_summary = plant_summary.reset_index(drop=True)
-
 # Plant-wise Pending Value
 
 plant_summary = plant_summary.reset_index(drop=True)
@@ -241,8 +237,6 @@ for i in range(len(plant_summary)):
 # Move S.No. to first column
 cols = ["S.No."] + [c for c in plant_summary.columns if c != "S.No."]
 plant_summary = plant_summary[cols]
-
-st.dataframe(plant_summary, use_container_width=True)
 
 st.dataframe(plant_summary, use_container_width=True)
 

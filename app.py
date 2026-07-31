@@ -205,7 +205,7 @@ if selected_grn != "All":
 # KPI CARDS
 # =====================================================
 st.markdown("---")
- st.header("📌 Dashboard Overview")
+st.header("📌 Dashboard Overview")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 

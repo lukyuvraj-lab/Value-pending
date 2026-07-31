@@ -377,6 +377,43 @@ if search:
 # =====================================================
 
 st.markdown("---")
+# -----------------------------
+# Detailed Data Filters
+# -----------------------------
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    detail_plant = st.selectbox(
+        "🏭 Plant",
+        ["All"] + sorted(detail_df["Plant"].unique().tolist())
+    )
+
+with col2:
+    detail_department = st.selectbox(
+        "⚙️ Department",
+        ["All"] + sorted(detail_df["Department"].unique().tolist())
+    )
+
+with col3:
+    detail_grn = st.selectbox(
+        "📄 GRN",
+        ["All"] + sorted(detail_df["GRN"].astype(str).unique().tolist())
+    )
+
+filtered_detail = detail_df.copy()
+
+if detail_plant != "All":
+    filtered_detail = filtered_detail[filtered_detail["Plant"] == detail_plant]
+
+if detail_department != "All":
+    filtered_detail = filtered_detail[
+        filtered_detail["Department"] == detail_department
+    ]
+
+if detail_grn != "All":
+    filtered_detail = filtered_detail[
+        filtered_detail["GRN"].astype(str) == detail_grn
+    ]
 st.subheader("📋 Detailed Pending Data")
 
 detail_df = (
@@ -388,9 +425,10 @@ detail_df = (
 )
 
 st.dataframe(
-    detail_df,
+    filtered_detail,
     use_container_width=True,
     height=500
+)
 )
 
 # =====================================================

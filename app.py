@@ -45,7 +45,8 @@ if uploaded_file is not None:
     df["Department"] = material.apply(get_department)
 
         # ---------------- Filters ----------------
-    plants = ["All Plants"] + sorted(plant.unique().tolist())
+    plant = df.iloc[:, PLANT].fillna("").astype(str).str.strip()
+plants = ["All Plants"] + sorted(plant.dropna().unique().tolist(), key=str)
     selected_plant = st.selectbox("🏭 Select Plant", plants)
 
     selected_dept = st.selectbox(

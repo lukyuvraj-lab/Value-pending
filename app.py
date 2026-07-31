@@ -377,16 +377,18 @@ if search:
 # =====================================================
 
 st.markdown("---")
+st.subheader("📋 Detailed Pending Data")
+
+# Create detail_df FIRST
 detail_df = (
     display_df
     .groupby(["Plant", "Department", "GRN"], as_index=False)
     .agg(
         Value=("Value", "sum")
     )
-    st.subheader("📋 Detailed Pending Data")
-# -----------------------------
-# Detailed Data Filters
-# -----------------------------
+)
+
+# Filters
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -410,7 +412,9 @@ with col3:
 filtered_detail = detail_df.copy()
 
 if detail_plant != "All":
-    filtered_detail = filtered_detail[filtered_detail["Plant"] == detail_plant]
+    filtered_detail = filtered_detail[
+        filtered_detail["Plant"] == detail_plant
+    ]
 
 if detail_department != "All":
     filtered_detail = filtered_detail[
@@ -421,13 +425,12 @@ if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
-)
+
 st.dataframe(
     filtered_detail,
     use_container_width=True,
     height=500
 )
-
 # =====================================================
 # DOWNLOAD SUMMARY
 # =====================================================

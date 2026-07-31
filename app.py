@@ -383,6 +383,7 @@ detail_df = (
     .agg(
         Value=("Value", "sum")
     )
+    st.subheader("📋 Detailed Pending Data")
 # -----------------------------
 # Detailed Data Filters
 # -----------------------------
@@ -420,7 +421,6 @@ if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
-st.subheader("📋 Detailed Pending Data")
 )
 st.dataframe(
     filtered_detail,

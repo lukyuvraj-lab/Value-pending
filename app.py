@@ -90,13 +90,6 @@ df["GRN"] = (
     .str.strip()
 )
 
-df["Currency"] = (
-    pd.to_numeric(df.iloc[:, CURRENCY], errors="coerce")
-    .fillna(0)
-    .astype(str)
-    .str.strip()
-)
-
 df["Value"] = pd.to_numeric(
     df.iloc[:, VALUE],
     errors="coerce"
@@ -392,7 +385,6 @@ show_columns = [
     "Plant",
     "Department",
     "GRN",
-    "Currency",
     "Value"
 ]
 

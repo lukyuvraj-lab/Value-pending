@@ -40,7 +40,19 @@ if uploaded_file is not None:
     df["Department"] = df["Material"].apply(department)
 
     # Filters
-    plants = ["All Plants"] + sorted(df["Plant"].astype(str).unique())
+    # Remove blank plants and convert everything to string
+plants = (
+    df["Plant"]
+    .dropna()
+    .astype(str)
+    .str.strip()
+    .unique()
+    .tolist()
+)
+
+plants.sort()
+
+plants = ["All Plants"] + plants
     selected_plant = st.selectbox("🏭 Select Plant", plants)
 
     departments = ["All", "Electrical", "Mechanical"]

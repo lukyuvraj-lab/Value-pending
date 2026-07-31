@@ -103,6 +103,23 @@ df["Value"] = pd.to_numeric(
 ).fillna(0)
 
 # -----------------------------
+# Load Electrical Material Master
+# -----------------------------
+master = pd.read_excel("material_master.xlsx", header=None)
+
+electrical_items = set(
+    master[0]
+    .astype(str)
+    .str.strip()
+)
+
+df["Department"] = df["Material"].apply(
+    lambda x: "Electrical"
+    if str(x).strip() in electrical_items
+    else "Mechanical"
+)
+
+# -----------------------------
 # Department Logic
 # -----------------------------
 def get_department(material):

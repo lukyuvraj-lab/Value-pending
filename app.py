@@ -21,9 +21,9 @@ if uploaded_file is not None:
     VALUE = 19     # Column T
 
     # Convert values
-    df.iloc[:, MATERIAL] = df.iloc[:, MATERIAL].astype(str).str.strip()
-    df.iloc[:, PLANT] = df.iloc[:, PLANT].astype(str).str.strip()
-    df.iloc[:, VALUE] = pd.to_numeric(df.iloc[:, VALUE], errors="coerce").fillna(0)
+    material = df.iloc[:, MATERIAL].astype(str).str.strip()
+    plant = df.iloc[:, PLANT].astype(str).str.strip()
+    value = pd.to_numeric(df.iloc[:, VALUE], errors="coerce").fillna(0)
 
     # Department Identification
     def get_department(material):
@@ -42,7 +42,7 @@ if uploaded_file is not None:
         else:
             return "Mechanical"
 
-    df["Department"] = df.iloc[:, MATERIAL].apply(get_department)
+    df["Department"] = material.apply(get_department)
 
     # ---------------- Filters ----------------
     plants = sorted(df.iloc[:, PLANT].dropna().unique().tolist())

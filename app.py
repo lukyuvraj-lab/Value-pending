@@ -167,6 +167,16 @@ selected_department = st.sidebar.selectbox(
     dept_list
 )
 
+selected_material = st.sidebar.selectbox(
+    "📦 Material",
+    material_list
+)
+
+selected_grn = st.sidebar.selectbox(
+    "📄 GRN",
+    grn_list
+)
+
 # -----------------------------
 # Apply Filters
 # -----------------------------
@@ -182,11 +192,20 @@ if selected_department != "All":
         filtered["Department"] == selected_department
     ]
 
+if selected_material != "All":
+    filtered = filtered[
+        filtered["Material"] == selected_material
+    ]
+
+if selected_grn != "All":
+    filtered = filtered[
+        filtered["GRN"] == selected_grn
+    ]
     # =====================================================
 # KPI CARDS
 # =====================================================
 st.markdown("---")
-st.header("📌 Dashboard Overview")
+st.subheader("📌 Dashboard Overview")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
@@ -219,30 +238,6 @@ kpi4.metric(
 # =====================================================
 st.markdown("---")
 st.subheader("🏭 Plant-wise Pending Value")
-
-# Create Plant Summary
-plant_summary = (
-    filtered_df.groupby("Plant", as_index=False)["Pending Value"]
-    .sum()
-)
-
-# Add TOTAL row
-total = plant_summary["Pending Value"].sum()
-plant_summary.loc[len(plant_summary)] = ["TOTAL", total]
-
-# Add Serial Number
-plant_summary["S.No."] = ""
-
-for i in range(len(plant_summary)):
-    if plant_summary.loc[i, "Plant"] != "TOTAL":
-        plant_summary.loc[i, "S.No."] = i + 1
-
-# Move S.No. to first column
-plant_summary = plant_summary[
-    ["S.No.", "Plant", "Pending Value"]
-]
-
-st.dataframe(plant_summary, use_container_width=True)
 
 plant_summary = (
     filtered
@@ -318,6 +313,45 @@ st.dataframe(
     use_container_width=True
 )
 
+# =====================================================
+# BAR CHART
+# =====================================================
+st.markdown("---")
+st.subheader("📈 Plant-wise Pending Value Chart")
+
+chart_data = (
+    plant_summary[
+        plant_summary["Plant"] != "TOTAL"
+    ]
+    .set_index("Plant")
+)
+
+st.bar_chart(chart_data["Value"])
+
+# =====================================================
+# PIE CHART
+# =====================================================
+st.markdown("---")
+st.subheader("🥧 Department-wise Pending Value")
+
+pie_data = (
+    dept_summary
+    .set_index("Department")
+)
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+
+ax.pie(
+    dept_summary["Value"],
+    labels=dept_summary["Department"],
+    autopct="%1.1f%%"
+)
+
+ax.set_title("Department-wise Pending Value")
+
+st.pyplot(fig)
 # =====================================================
 # SEARCH
 # =====================================================

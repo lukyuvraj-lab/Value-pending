@@ -295,21 +295,6 @@ st.dataframe(
 )
 
 # =====================================================
-# BAR CHART
-# =====================================================
-st.markdown("---")
-st.subheader("📈 Plant-wise Pending Value Chart")
-
-chart_data = (
-    plant_summary[
-        plant_summary["Plant"] != "TOTAL"
-    ]
-    .set_index("Plant")
-)
-
-st.bar_chart(chart_data["Value"])
-
-# =====================================================
 # PIE CHART
 # =====================================================
 st.markdown("---")

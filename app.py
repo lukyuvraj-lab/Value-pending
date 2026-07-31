@@ -44,28 +44,26 @@ if uploaded_file is not None:
 
     df["Department"] = material.apply(get_department)
 
-    # ---------------- Filters ----------------
-    # Plant Filter
-plants = (
-    df.iloc[:, 2]
-    .fillna("")
-    .astype(str)
-    .str.strip()
-)
+        # ---------------- Filters ----------------
+    plants = ["All Plants"] + sorted(plant.unique().tolist())
+    selected_plant = st.selectbox("🏭 Select Plant", plants)
 
-plants = [p for p in plants.unique().tolist() if p != ""]
-plants = ["All Plants"] + plants
-selected_plant = st.selectbox("Select Plant", plants)
+    selected_dept = st.selectbox(
+        "Department",
+        ["All", "Electrical", "Mechanical"]
+    )
 
-# Department Filter
-selected_dept = st.selectbox(
-    "Select Department",
-    ["All", "Electrical", "Mechanical"]
-)
+    filtered = df.copy()
 
-# Apply filters
-filtered = df.copy()
+    if selected_plant != "All Plants":
+        filtered = filtered[
+            filtered.iloc[:, PLANT].astype(str).str.strip() == selected_plant
+        ]
 
+    if selected_dept != "All":
+        filtered = filtered[
+            filtered["Department"] == selected_dept
+        ]
 if selected_plant != "All Plants":
     filtered = filtered[
         filtered.iloc[:, 2].astype(str).str.strip() == selected_plant

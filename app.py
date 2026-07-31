@@ -19,7 +19,6 @@ if uploaded_file is None:
 df = pd.read_excel(uploaded_file)
 
     # Read Excel
-    df = pd.read_excel(uploaded_file)
 
     if df.empty:
         st.error("Uploaded file is empty.")

@@ -167,11 +167,6 @@ selected_department = st.sidebar.selectbox(
     dept_list
 )
 
-selected_grn = st.sidebar.selectbox(
-    "📄 GRN",
-    grn_list
-)
-
 # -----------------------------
 # Apply Filters
 # -----------------------------
@@ -187,10 +182,6 @@ if selected_department != "All":
         filtered["Department"] == selected_department
     ]
 
-if selected_grn != "All":
-    filtered = filtered[
-        filtered["GRN"] == selected_grn
-    ]
     # =====================================================
 # KPI CARDS
 # =====================================================

@@ -314,6 +314,21 @@ st.dataframe(
 )
 
 # =====================================================
+# BAR CHART
+# =====================================================
+st.markdown("---")
+st.subheader("📈 Plant-wise Pending Value Chart")
+
+chart_data = (
+    plant_summary[
+        plant_summary["Plant"] != "TOTAL"
+    ]
+    .set_index("Plant")
+)
+
+st.bar_chart(chart_data["Value"])
+
+# =====================================================
 # PIE CHART
 # =====================================================
 st.markdown("---")
@@ -335,6 +350,27 @@ ax.pie(
 )
 
 ax.set_title("Department-wise Pending Value")
+
+st.pyplot(fig)
+# =====================================================
+# SEARCH
+# =====================================================
+
+st.markdown("---")
+st.subheader("🔍 Search")
+
+search = st.text_input(
+    "Search Material / GRN"
+).strip()
+
+display_df = filtered.copy()
+
+if search:
+    display_df = display_df[
+        display_df["Material"].str.contains(search, case=False, na=False)
+        |
+        display_df["GRN"].str.contains(search, case=False, na=False)
+    ]
 
 # =====================================================
 # DETAILED DATA

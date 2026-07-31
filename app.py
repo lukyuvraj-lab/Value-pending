@@ -94,4 +94,4 @@ if uploaded_file is not None:
     st.dataframe(summary, use_container_width=True)
 
 else:
-    st.info("
+    st.info("Please upload the MB52 Excel file.")

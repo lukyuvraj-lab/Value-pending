@@ -70,9 +70,9 @@ if len(df.columns) <= VALUE:
 # Prepare Data
 # -----------------------------
 df["Material"] = (
-    df.iloc[:, Material]
-    .fillna("")
-    .apply(lambda x: str(x).split(".")[0])
+  df.iloc[:, MATERIAL]
+    .astype(str)
+    .str.replace(".0", "", regex=False)
     .str.strip()
 )
 

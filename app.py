@@ -381,7 +381,6 @@ st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
 show_columns = [
-    "Material",
     "Plant",
     "Department",
     "GRN",

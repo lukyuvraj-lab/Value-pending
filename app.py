@@ -84,9 +84,9 @@ df["Plant"] = (
 )
 
 df["GRN"] = (
-    pd.to_numeric(df.iloc[:, GRN], errors="coerce")
-    .fillna(0)
-    .astype(str)
+    df.iloc[:, GRN]
+    .fillna("")
+    .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 

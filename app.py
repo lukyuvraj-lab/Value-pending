@@ -82,7 +82,7 @@ df["Plant"] = (
     .astype(str)
     .str.strip()
 )
-
+st.write("Plant values:", df["Plant"].head(10))
 df["GRN"] = (
     pd.to_numeric(df.iloc[:, GRN], errors="coerce")
     .fillna(0)

@@ -220,23 +220,27 @@ kpi4.metric(
 st.markdown("---")
 st.subheader("🏭 Plant-wise Pending Value")
 
-# Plant-wise Pending Value
+# Create Plant Summary
+plant_summary = (
+    filtered_df.groupby("Plant", as_index=False)["Pending Value"]
+    .sum()
+)
 
-plant_summary = plant_summary.reset_index(drop=True)
+# Add TOTAL row
+total = plant_summary["Pending Value"].sum()
+plant_summary.loc[len(plant_summary)] = ["TOTAL", total]
 
-# Add Serial Number column
+# Add Serial Number
 plant_summary["S.No."] = ""
 
-# Fill serial numbers
 for i in range(len(plant_summary)):
-    if str(plant_summary.loc[i, "Plant"]).upper() == "TOTAL":
-        plant_summary.loc[i, "S.No."] = ""
-    else:
+    if plant_summary.loc[i, "Plant"] != "TOTAL":
         plant_summary.loc[i, "S.No."] = i + 1
 
 # Move S.No. to first column
-cols = ["S.No."] + [c for c in plant_summary.columns if c != "S.No."]
-plant_summary = plant_summary[cols]
+plant_summary = plant_summary[
+    ["S.No.", "Plant", "Pending Value"]
+]
 
 st.dataframe(plant_summary, use_container_width=True)
 

@@ -377,6 +377,12 @@ if search:
 # =====================================================
 
 st.markdown("---")
+detail_df = (
+    display_df
+    .groupby(["Plant", "Department", "GRN"], as_index=False)
+    .agg(
+        Value=("Value", "sum")
+    )
 # -----------------------------
 # Detailed Data Filters
 # -----------------------------
@@ -415,15 +421,7 @@ if detail_grn != "All":
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
 st.subheader("📋 Detailed Pending Data")
-
-detail_df = (
-    display_df
-    .groupby(["Plant", "Department", "GRN"], as_index=False)
-    .agg(
-        Value=("Value", "sum")
-    )
 )
-
 st.dataframe(
     filtered_detail,
     use_container_width=True,

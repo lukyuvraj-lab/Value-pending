@@ -298,13 +298,6 @@ st.dataframe(
 # SEARCH
 # =====================================================
 
-st.markdown("---")
-st.subheader("🔍 Search")
-
-search = st.text_input(
-    "Search Material / GRN"
-).strip()
-
 display_df = filtered.copy()
 
 if search:

@@ -380,19 +380,15 @@ st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
 detail_df = (
-
     display_df
-
     .groupby(["Plant", "Department", "GRN"], as_index=False)
-
     .agg(
-
         Value=("Value", "sum")
     )
 )
 
 st.dataframe(
-    display_df[show_columns],
+    detail_df,
     use_container_width=True,
     height=500
 )

@@ -77,9 +77,9 @@ df["Material"] = (
 )
 
 df["Plant"] = (
-    pd.to_numeric(df.iloc[:, PLANT], errors="coerce")
-    .fillna(0)
-    .astype(str)
+    df.iloc[:, PLANT]
+    .fillna("")
+    .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 

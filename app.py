@@ -205,18 +205,7 @@ if selected_grn != "All":
 # KPI CARDS
 # =====================================================
 st.markdown("---")
-col1, col2 = st.columns([4, 1])
-
-with col1:
-    st.title("📌 Dashboard Overview")
-
-with col2:
-    st.markdown(
-        f"<div style='text-align:right; font-size:16px; font-weight:bold;'>"
-        f"{selected_date.strftime('%d-%m-%Y')}"
-        f"</div>",
-        unsafe_allow_html=True
-    )
+ st.header("📌 Dashboard Overview")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 

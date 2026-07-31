@@ -109,6 +109,7 @@ master = pd.read_excel("material_master.xlsx", header=None)
 
 electrical_items = set(
     master[0]
+    .fillna(0)
     .astype(str)
     .str.strip()
 )

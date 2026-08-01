@@ -70,6 +70,8 @@ if uploaded_file is None:
 def load_excel(uploaded_file):
     return pd.read_excel(uploaded_file)
 
+start = time.perf_counter()
+
 try:
     df = load_excel(uploaded_file)
 except Exception as e:

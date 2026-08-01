@@ -381,16 +381,6 @@ today = pd.Timestamp.today().normalize()
 # Calculate 5 working day due date (Saturday & Sunday excluded)
 detail["Due Date"] = detail["GRN DATE"] + BDay(5)
 
-plant_map = {
-    1201: "Ecity",
-    1202: "Vemgal"
-}
-
-detail["Plant"] = (
-    pd.to_numeric(detail["Plant"], errors="coerce")
-    .map(plant_map)
-    .fillna(detail["Plant"])
-)
 # Show Due Date without time
 detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
 

@@ -356,7 +356,7 @@ detail = (
         [
             "Plant",
             "Department",
-            "GRN NO",
+            "GRN",
             "GRN DATE"
         ],
         as_index=False

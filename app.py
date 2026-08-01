@@ -354,6 +354,9 @@ detail = (
     )
 )
 
+st.write(detail.columns.tolist())
+st.stop()
+
 st.dataframe(
     detail,
     use_container_width=True,

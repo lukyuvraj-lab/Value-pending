@@ -627,17 +627,21 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-# Convert Value to numeric
-detail["Value"] = pd.to_numeric(detail["Value"], errors="coerce").fillna(0)
+# 1. Calculate totals
+Value_num = pd.to_numeric(detail["Value"], errors="coerce").fillna(0)
 
-# Calculate totals
-mech_value = detail.loc[detail["Department"] == "Mechanical", "Value"].sum()
-elec_value = detail.loc[detail["Department"] == "Electrical", "Value"].sum()
-total_value = detail["Value"].sum()
+mech_total = ...
+elec_total = ...
+total_value = ...
 
+# 2. Today's date
 today = pd.Timestamp.today()
 
-mail_text = f"""
+# 3. Create mail text
+mail_text = f"""..."""
+
+# 4. Display mail text
+st.text_area(...)
 Dear Sir,
 
 Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.

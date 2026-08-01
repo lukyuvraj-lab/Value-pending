@@ -226,7 +226,7 @@ dept_summary = (
     .agg(Pending_Value=("Value", "sum"))
 )
 
-# Plant + Department Summary
+# Plant Summary
 summary = (
     filtered[
         filtered["Plant"].notna() &

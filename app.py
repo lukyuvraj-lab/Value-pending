@@ -51,8 +51,12 @@ with col1:
     st.title("📊 HQA E&M Open Recepite Dashboard")
 with col2:
     st.markdown(
-        f"<span style='font-size:16px;'>📅 {datetime.now().strftime('%d-%m-%Y')}</span>",
-        unsafe_allow_html=True
+        f"""
+        <div style="margin-top:75px; text-align:right; font-size:16px;">
+            📅 {datetime.now().strftime('%d-%m-%Y')}
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
 # -----------------------------

@@ -52,7 +52,7 @@ with col1:
 with col2:
     st.markdown(
         f"""
-        <div style="margin-top:75px; text-align:right; font-size:16px;">
+        <div style="margin-top:70px; text-align:right; font-size:25px;">
             📅 {datetime.now().strftime('%d-%m-%Y')}
         </div>
         """,

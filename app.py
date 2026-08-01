@@ -355,8 +355,17 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
     electrical = detail[detail["Department"] == "Electrical"]
     mechanical = detail[detail["Department"] == "Mechanical"]
 
-    electrical.to_excel(writer, sheet_name="Electrical", index=False)
-    mechanical.to_excel(writer, sheet_name="Mechanical", index=False)
+    electrical.to_excel(
+        writer,
+        sheet_name="Electrical",
+        index=False
+    )
+
+    mechanical.to_excel(
+        writer,
+        sheet_name="Mechanical",
+        index=False
+    )
 
     workbook = writer.book
 
@@ -371,35 +380,30 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
         color="FFFFFF"
     )
 
-   for ws in workbook.worksheets:
-    headers = [cell.value for cell in ws[1]]
+    for ws in workbook.worksheets:
 
-    value_col = headers.index("Value") + 1
-    last_row = ws.max_row + 1
-    col_letter = get_column_letter(value_col)
+        last_row = ws.max_row + 1
 
-    ws.cell(last_row, 1).value = "TOTAL"
-    ws.cell(last_row, value_col).value = (
-        f"=SUM({col_letter}2:{col_letter}{last_row-1})"
-    )
+        ws.cell(last_row, 1).value = "TOTAL"
 
-    for cell in ws[1]:
-        cell.fill = header_fill
-        cell.font = header_font
+        value_col = ws.max_column
 
-    ws.auto_filter.ref = ws.dimensions
+        ws.cell(
+            last_row,
+            value_col
+        ).value = f"=SUM({get_column_letter(value_col)}2:{get_column_letter(value_col)}{last_row-1})"
 
-    for row in ws.iter_rows(min_row=2):
-        for cell in row:
-            if isinstance(cell.value, (int, float)):
-                if float(cell.value).is_integer():
-                    cell.number_format = '#,##,##0'
-                else:
-                    cell.number_format = '#,##,##0.00'
+        for cell in ws[1]:
+            cell.fill = header_fill
+            cell.font = header_font
 
-    for col in ws.columns:
-        length = max(len(str(c.value)) if c.value else 0 for c in col)
-        ws.column_dimensions[col[0].column_letter].width = length + 3
+        ws.auto_filter.ref = ws.dimensions
+
+        for col in ws.columns:
+            length = max(len(str(c.value)) if c.value else 0 for c in col)
+            ws.column_dimensions[col[0].column_letter].width = length + 3
+
+output.seek(0)
 
 st.download_button(
     "📥 Download Excel",

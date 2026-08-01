@@ -229,6 +229,12 @@ st.dataframe(
 st.markdown("---")
 st.subheader("📊 Plant & Department Summary")
 
+# Remove blank Plant rows
+filtered_summary = filtered.copy()
+filtered_summary = filtered summary[
+    filtered_summary["Plant"].fillna("").astype(str).str.strip() != ""
+]
+
 summary = (
     filtered
     .groupby(["Plant", "Department"])

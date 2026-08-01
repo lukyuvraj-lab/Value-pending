@@ -349,8 +349,7 @@ st.dataframe(
 )
 
 import io
-from openpyxl.styles import PatternFill, Font
-from openpyxl.utils import get_column_letter
+import pandas as pd
 
 output = io.BytesIO()
 
@@ -368,15 +367,11 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
         df = detail[detail["Department"] == dept].copy()
 
-        # if no records, create empty sheet with headers
-        if df.empty:
-            df = pd.DataFrame(columns=detail.columns)
-
-        # Arrange columns
-        cols = [
+        # Select columns
+        columns = [
             "Plant",
             "Department",
-            "Pending_Value",
+            "Pending_Value",      # <-- Change this if your column name is different
             "GRN",
             "GRN Date",
             "Material",
@@ -385,43 +380,16 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
             "Vendor"
         ]
 
-        cols = [c for c in cols if c in df.columns]
+        # Keep only columns that exist
+        columns = [c for c in columns if c in df.columns]
+        df = df[columns]
 
-        df = df[cols]
-
+        # Write sheet
         df.to_excel(
             writer,
             sheet_name=dept[:31],
             index=False
         )
-
-    workbook = writer.book
-
-    blue_fill = PatternFill(
-        fill_type="solid",
-        start_color="4F81BD",
-        end_color="4F81BD"
-    )
-
-    white_font = Font(
-        bold=True,
-        color="FFFFFF"
-    )
-
-    for ws in workbook.worksheets:
-
-        # Header colour
-        for cell in ws[1]:
-            cell.fill = blue_fill
-            cell.font = white_font
-
-        # Filter
-        ws.auto_filter.ref = ws.dimensions
-
-        # Auto width
-        for col in ws.columns:
-            width = max(len(str(c.value)) if c.value else 0 for c in col)
-            ws.column_dimensions[col[0].column_letter].width = width + 3
 
 output.seek(0)
 

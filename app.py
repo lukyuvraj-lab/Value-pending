@@ -194,8 +194,8 @@ selected_department = st.sidebar.selectbox(
     dept_list
 )
 # Tasl logo
-st.markdown("---")
-st.image("tasl_logo.png", use_container_width=True)
+st.sidebar.markdown("---")
+st.sidebar.image("tata_logo.png", width=180)
 
 # -----------------------------
 # Apply Filters

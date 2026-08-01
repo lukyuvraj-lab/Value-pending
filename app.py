@@ -348,54 +348,74 @@ st.dataframe(
     hide_index=True
 )
 
-import io
-import pandas as pd
-
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-    departments = [
-        "Electrical",
-        "Mechanical",
-        "Accept",
-        "Black Stock",
-        "Unfinished Parts"
-    ]
+    electrical = detail[detail["Department"] == "Electrical"]
+    mechanical = detail[detail["Department"] == "Mechanical"]
 
-    for dept in departments:
+    electrical.to_excel(
+        writer,
+        sheet_name="Electrical",
+        index=False
+    )
 
-        df = detail[detail["Department"] == dept].copy()
+    mechanical.to_excel(
+        writer,
+        sheet_name="Mechanical",
+        index=False
+    )
 
-        # Select columns
-        columns = [
-    "Plant",
-    "Department",
-    "Value in QualInsp.",
-    "GRN NO",
-    "GRN DATE",
-    "Material",
-    "Material Description",
-    "Storage Location",
-    "Vendor"
-]
+    workbook = writer.book
 
-        # Keep only columns that exist
-        columns = [c for c in columns if c in df.columns]
-        df = df[columns]
+    header_fill = PatternFill(
+        start_color="4F81BD",
+        end_color="4F81BD",
+        fill_type="solid"
+    )
 
-        # Write sheet
-        df.to_excel(
-            writer,
-            sheet_name=dept[:31],
-            index=False
-        )
+    header_font = Font(
+        bold=True,
+        color="FFFFFF"
+    )
+
+    for ws in workbook.worksheets:
+
+        last_row = ws.max_row + 1
+
+        ws.cell(last_row, 1).value = "TOTAL"
+
+        value_col = ws.max_column
+
+        ws.cell(
+            last_row,
+            value_col
+        ).value = f"=SUM({get_column_letter(value_col)}2:{get_column_letter(value_col)}{last_row-1})"
+
+        for cell in ws[1]:
+            cell.fill = header_fill
+            cell.font = header_font
+
+        ws.auto_filter.ref = ws.dimensions
+
+        # Indian number format
+for row in ws.iter_rows(min_row=2):
+    for cell in row:
+        if isinstance(cell.value, (int, float)):
+            if float(cell.value).is_integer():
+                cell.value = int(cell.value)
+            cell.number_format = '#,##,##0.00'
+
+        for col in ws.columns:
+            length = max(len(str(c.value)) if c.value else 0 for c in col)
+            ws.column_dimensions[col[0].column_letter].width = length + 3
 
 output.seek(0)
 
 st.download_button(
-    "📥 Download Detailed Excel",
-    data=output,
+    "📥 Download Excel",
+    output,
     file_name="Pending_Report.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )

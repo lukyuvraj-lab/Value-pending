@@ -414,6 +414,19 @@ detail["5 Days Ageing"] = (
 
 # Show Due Date without time
 detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+
+# Remove .000000 from GRN
+
+detail["GRN"] = (
+
+    pd.to_numeric(detail["GRN"], errors="coerce")
+
+    .astype("Int64")
+
+    .astype(str)
+
+)
+
  # Remove  .00000 from value
 detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 # Highlight overdue rows

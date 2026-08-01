@@ -357,7 +357,7 @@ if detail_grn != "All":
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-
+st.write(flitered_detail.columns.tolist())
 detail = (
     filtered_detail.groupby(
         [

@@ -636,10 +636,20 @@ HQA Team.
 """
 
 st.subheader("📧 Mail Content")
+st.markdown("""
+<style>
+textarea {
+    font-size: 18px !important;
+    font-family: Calibri, Arial, sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.text_area(
-    "Copy and paste into Outlook",
+    "📧 Copy and paste into Outlook",
     mail_text,
     height=300,
+)
 )
 
 # Remove this line

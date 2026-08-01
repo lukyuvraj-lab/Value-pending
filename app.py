@@ -451,8 +451,13 @@ def highlight_overdue(row):
     
 display_detail = detail.drop(columns=["Closing Date"])
 
+
+# Rename column
+detail.rename(columns={"value": "Value"}, inplace=True)
+
+# Display table
 st.dataframe(
-    display_detail.style.apply(highlight_overdue, axis=1),
+    detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )

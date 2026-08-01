@@ -315,11 +315,13 @@ if selected_plant == "All Plants":
 else:
     plant_summary = summary[summary["Plant"] == selected_plant]
 
+table_height = 35 * (len(plant_summary) + 1) + 5  # Header + rows
+
 st.dataframe(
     plant_summary,
     hide_index=True,
-    width=430,     # Adjust width as needed
-    height=190     # Adjust height as needed
+    use_container_width=True,
+    height=table_height
 )
 display_df = filtered.copy()
 

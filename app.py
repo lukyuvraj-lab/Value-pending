@@ -452,7 +452,6 @@ def highlight_overdue(row):
 # Remove Closing Date column from display
 display_detail = detail.drop(columns=["Closing Date"])
 
-)
 # Display table
 st.dataframe(
     detail.style.apply(highlight_overdue, axis=1),

@@ -397,16 +397,19 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
             cell.fill = header_fill
             cell.font = header_font
 
-        ws.auto_filter.ref = ws.dimensions
+                ws.auto_filter.ref = ws.dimensions
 
         # Indian number format
-for row in ws.iter_rows(min_row=2):
-    for cell in row:
-        if isinstance(cell.value, (int, float)):
-            if float(cell.value).is_integer():
-                cell.value = int(cell.value)
-            cell.number_format = '#,##,##0.00'
+        for row in ws.iter_rows(min_row=2):
+            for cell in row:
+                if isinstance(cell.value, (int, float)):
+                    if float(cell.value).is_integer():
+                        cell.value = int(cell.value)
+                        cell.number_format = "#,##,##0"
+                    else:
+                        cell.number_format = "#,##,##0.00"
 
+        # Auto width
         for col in ws.columns:
             length = max(len(str(c.value)) if c.value else 0 for c in col)
             ws.column_dimensions[col[0].column_letter].width = length + 3

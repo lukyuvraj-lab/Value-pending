@@ -234,7 +234,6 @@ filtered_summary = filtered.copy()
 filtered_summary = filtered_summary[
     filtered_summary["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-st.write(filtered[["Plant", 'Department']])
 summary = (
     filtered[
          filtered["Plant"].notna() & (filtered["Plant"].astype(str).str.strip() != "")

@@ -352,8 +352,6 @@ output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-with pd.ExcelWriter(output, engine="openpyxl") as writer:
-
     electrical = detail[detail["Department"] == "Electrical"]
     mechanical = detail[detail["Department"] == "Mechanical"]
     accept = detail[detail["Department"] == "Accept"]
@@ -369,29 +367,22 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
     workbook = writer.book
 
     header_fill = PatternFill(
-
         start_color="4F81BD",
-
         end_color="4F81BD",
-
         fill_type="solid"
-
     )
 
     header_font = Font(
-
         bold=True,
-
         color="FFFFFF"
+    )
 
     for ws in workbook.worksheets:
 
         last_row = ws.max_row + 1
-
         ws.cell(last_row, 1).value = "TOTAL"
 
         value_col = ws.max_column
-
         ws.cell(
             last_row,
             value_col
@@ -402,7 +393,7 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
             cell.font = header_font
 
         ws.auto_filter.ref = ws.dimensions
-        # Indian number format
+
         for row in ws.iter_rows(min_row=2):
             for cell in row:
                 if isinstance(cell.value, (int, float)):
@@ -412,7 +403,6 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
                     else:
                         cell.number_format = "#,##,##0.00"
 
-        # Auto width
         for col in ws.columns:
             length = max(len(str(c.value)) if c.value else 0 for c in col)
             ws.column_dimensions[col[0].column_letter].width = length + 3

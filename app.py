@@ -392,24 +392,18 @@ today = pd.Timestamp.today().normalize()
 # Calculate 5 working day due date (Saturday & Sunday excluded)
 detail["Due Date"] = detail["GRN DATE"] + BDay(5)
 
-# Show Due Date without time
-detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
-
-# Calculate Ageing
-detail["5 Days Ageing"] = (
-    pd.to_datetime(detail["Due Date"], format="%d-%m-%Y") - today
-).dt.days
+# Calculate 5 working day due date (Saturday & Sunday excluded)
+detail["Due Date"] = detail["GRN DATE"] + BDay(5)
 
 # Quarter-end override
-if grn_date.month in [3, 6, 9, 12]:
-    quarter_end = pd.Timestamp(
-        year=grn_date.year,
-        month=grn_date.month,
-        day=grn_date.days_in_month
-    )
+quarter_end = detail["GRN DATE"] + pd.offsets.QuarterEnd(0)
 
-    if due_date > quarter_end:
-        due_date = quarter_end
+mask = (
+    detail["GRN DATE"].dt.month.isin([3, 6, 9, 12]) &
+    (detail["Due Date"] > quarter_end)
+)
+
+detail.loc[mask, "Due Date"] = quarter_end[mask]
 
 # Show GRN Date without time
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")

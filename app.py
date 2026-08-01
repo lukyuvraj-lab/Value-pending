@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from streamlit_autorefresh import st_autorefresh
 import io
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
+# Auto refresh every 60 seconds
+st_autorefresh(interval=60000, key="auto_refresh")
 st.set_page_config(
     page_title="HQA E&M Open Receipt",
     layout="wide",

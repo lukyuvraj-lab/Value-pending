@@ -304,7 +304,7 @@ with col1:
     st.dataframe(
     dept_summary,
     hide_index=True,
-    width=550,      # Increase width
+    width=200,      # Increase width
     height=180      # Increase height
 )
 

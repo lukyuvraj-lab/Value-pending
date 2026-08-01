@@ -238,7 +238,7 @@ kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 total_value = filtered["Value"].sum()
 grn_count = filtered["GRN"].nunique()
 lot_count = len(filtered)
-plant_count = filtered["Plant"].nunique() - 1
+plant_count = filtered["Plant"].nunique()
 
 kpi1.metric(
     "💰 Pending Value",

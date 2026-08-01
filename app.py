@@ -195,7 +195,7 @@ if selected_department != "All":
 # KPI CARDS
 # =====================================================
 st.markdown("---")
-st.subheader("📌 Dashboard Overview")
+st.subheader("📌 Dashboard")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 

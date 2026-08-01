@@ -310,7 +310,7 @@ with col1:
    if selected_plant != "All Plants":
     st.subheader("📊 Plant Summary")
 
-    if not plant_summary.empty:,
+    if not plant_summary.empty:
         st.dataframe(
             plant_summary,
             use_container_width=True,

@@ -463,7 +463,7 @@ def highlight_overdue(row):
 detail.rename(columns={"value": "Value"}, inplace=True)
 
 # Remove Closing Date column
-detail_display = detail.copy()
+detail_display = detail.drop(columns=["Closing Date"], errors="ignore")
 
 st.write("Before table:", round(time.perf_counter() - start, 2), "sec")
 
@@ -471,7 +471,6 @@ st.dataframe(
     detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
-)
 )
 #Excel Download
 output = io.BytesIO()

@@ -342,7 +342,7 @@ detail_df = (
 )
 
 # Filters
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4= st.columns(4)
 
 with col1:
     detail_plant = st.selectbox(
@@ -361,6 +361,11 @@ with col3:
         "📄 GRN",
         ["All"] + sorted(detail_df["GRN"].astype(str).unique().tolist())
     )
+with col4:
+    detail_grn_date= st.selectbox(
+        "📅 GRN Date",
+        ["All"] + sorted(detail_df["GRN DATE"].astype(str).unique().tolist())
+    )
 
 filtered_detail = detail_df.copy()
 
@@ -377,6 +382,10 @@ if detail_department != "All":
 if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
+    ]
+ if detail_grn_date != "All":
+    filtered_detail = filtered_detail[
+        filtered_detail["GRN DATE"].astype(str) == detail_grn_date
     ]
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""

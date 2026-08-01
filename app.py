@@ -373,14 +373,14 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     for ws in workbook.worksheets:
 
-        last_row = ws.max_row + 1
-        value_col = ws.max_column
+        headers = [cell.value for cell in ws[1]]
+value_col = headers.index("Value") + 1
 
-        ws.cell(last_row, 1).value = "TOTAL"
-        ws.cell(last_row, value_col).value = (
-            f"=SUM({get_column_letter(value_col)}2:"
-            f"{get_column_letter(value_col)}{last_row-1})"
-        )
+last_row = ws.max_row + 1
+col_letter = get_column_letter(value_col)
+
+ws.cell(last_row, 1).value = "TOTAL"
+ws.cell(last_row, value_col).value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
 
         for cell in ws[1]:
             cell.fill = header_fill

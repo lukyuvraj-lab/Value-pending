@@ -307,7 +307,7 @@ with col1:
         use_container_width=False
     )
 with col1:
-   st.subheader("📊 Plant Summary")
+   st.subheader("📊 Plant Summary"),
     if plant_summary.empty:
     st.info("No Plant Summary available for the selected filters.")
 else:

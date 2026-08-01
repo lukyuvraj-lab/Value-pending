@@ -14,7 +14,6 @@ st.set_page_config(
 # Page Configuration
 # -----------------------------
 
-)
 st.markdown("""
 <style>
 [data-testid="stSidebar"] {

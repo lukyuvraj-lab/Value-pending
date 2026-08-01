@@ -349,7 +349,6 @@ detail = (
         Value=("Value in QualInsp.", "sum")
     )
 )
-)
 
 st.dataframe(
     detail,

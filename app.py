@@ -670,7 +670,7 @@ textarea {
 st.text_area(
     "📧 Copy and paste into Outlook",
     value=mail_text,
-    height=300,
+    height=350,
 )
 # Remove this line
 # st.download_button("📥 Download Detailed Data", ...)

@@ -215,34 +215,6 @@ kpi4.metric(
     plant_count)
 
 # =====================================================
-# PLANT WISE SUMMARY
-# =====================================================
-st.markdown("---")
-st.subheader("🏭 Plant-wise Pending Value")
-
-plant_summary = (
-    filtered
-    .groupby("Plant", as_index=False)["Value"]
-    .sum()
-    .sort_values("Value", ascending=False)
-)
-
-total_row = pd.DataFrame({
-    "Plant": ["TOTAL"],
-    "Value": [plant_summary["Value"].sum()]
-})
-
-plant_summary = pd.concat(
-    [plant_summary, total_row],
-    ignore_index=True
-)
-
-st.dataframe(
-    plant_summary,
-    use_container_width=True
-)
-
-# =====================================================
 # DEPARTMENT SUMMARY
 # =====================================================
 st.markdown("---")

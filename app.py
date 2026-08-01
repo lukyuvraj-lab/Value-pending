@@ -496,46 +496,62 @@ st.download_button(
 # DOWNLOAD DETAIL (EXCEL)
 # =====================================================
 
+import io
+from openpyxl.styles import Font
+from openpyxl.utils import get_column_letter
+
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
+    # Write data
     display_df.to_excel(writer, sheet_name="Detailed Data", index=False)
 
-    
-    from openpyxl.styles import Font
-from openpyxl.utils import get_column_letter
+    ws = writer.sheets["Detailed Data"]
 
-ws = writer.sheets["Detailed Data"]
+    # -----------------------------
+    # TOTAL ROW
+    # -----------------------------
+    last_row = ws.max_row + 1
 
-last_row = ws.max_row + 1
+    ws.cell(row=last_row, column=1).value = "TOTAL"
+    ws.cell(row=last_row, column=1).font = Font(bold=True)
 
-# TOTAL text
-ws.cell(row=last_row, column=1).value = "TOTAL"
-ws.cell(row=last_row, column=1).font = Font(bold=True)
+    # Column T = 20 (Value in QualInsp.)
+    value_col = 20
+    col_letter = get_column_letter(value_col)
 
-# Column T = 20
-value_col = 20
-col_letter = get_column_letter(value_col)   # Returns "T"
+    ws.cell(
+        row=last_row,
+        column=value_col
+    ).value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
 
-# Sum formula
-ws.cell(row=last_row, column=value_col).value = (
-    f"=SUM({col_letter}2:{col_letter}{last_row-1})"
-)
-ws.cell(row=last_row, column=value_col).font = Font(bold=True)
-ws.cell(row=last_row, column=value_col).number_format = "#,##0.00"
-    # Auto width
-      
-        for col in ws.columns:
-        max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)
-        ws.column_dimensions[col[0].column_letter].width = max_len + 3
+    ws.cell(row=last_row, column=value_col).font = Font(bold=True)
+    ws.cell(row=last_row, column=value_col).number_format = "#,##0.00"
 
-    # Number format
-    for row in ws.iter_rows(min_row=2):
+    # -----------------------------
+    # AUTO WIDTH
+    # -----------------------------
+    for column in ws.columns:
+        max_length = 0
+        letter = column[0].column_letter
+
+        for cell in column:
+            try:
+                if cell.value is not None:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+
+        ws.column_dimensions[letter].width = max_length + 3
+
+    # -----------------------------
+    # NUMBER FORMAT
+    # -----------------------------
+    for row in ws.iter_rows(min_row=2, max_row=last_row):
         for cell in row:
             if isinstance(cell.value, (int, float)):
                 if float(cell.value).is_integer():
-                    cell.value = int(cell.value)
                     cell.number_format = "#,##0"
                 else:
                     cell.number_format = "#,##0.00"
@@ -548,7 +564,6 @@ st.download_button(
     file_name=f"HQA_EM_Open_Receipt_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-
 # =====================================================
 # FOOTER
 # =====================================================

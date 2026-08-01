@@ -76,9 +76,6 @@ if uploaded_file is None:
 # -----------------------------
 try:
     df = pd.read_excel(uploaded_file)
-
-# Check original columns
-st.write(df.columns.tolist())
 except Exception as e:
     st.error(f"Unable to read Excel file.\n\n{e}")
     st.stop()

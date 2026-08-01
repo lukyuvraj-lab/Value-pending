@@ -606,6 +606,59 @@ st.download_button(
     file_name=f"HQA_EM_Open_Receipt_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
+
+
+# =====================================================
+# Pending Status Mail 
+# =====================================================
+
+import win32com.client as win32
+from datetime import datetime
+
+def send_status_mail(excel_file, mech_value, elec_value):
+    total_value = mech_value + elec_value
+
+    outlook = win32.Dispatch("Outlook.Application")
+    mail = outlook.CreateItem(0)
+
+    mail.To = "manager@company.com"
+    mail.CC = ""
+    mail.Subject = f"HQA Open Receipt Pending Value Status - {datetime.now().strftime('%d-%b-%Y')}"
+
+    mail.Body = f"""Dear Sir,
+
+Please find below the HQA Open Receipt Pending Value status as of {datetime.now().strftime('%d-%b-%Y')}.
+
+Mechanical Department : ₹ {mech_value:,.0f}
+
+Electrical Department : ₹ {elec_value:,.0f}
+
+-------------------------------------------------
+Total Pending Value   : ₹ {total_value:,.0f}
+-------------------------------------------------
+
+The detailed pending GRN report is attached for your kind reference.
+
+Regards,
+
+HQA Team
+Tata Advanced Systems Limited
+"""
+
+    mail.Attachments.Add(excel_file)
+
+    mail.Send()      # Use mail.Display() if you want to review before sending
+
+if st.button("📧 Send Status Mail"):
+
+    send_status_mail(
+        excel_file="HQA_Open_Receipt_Details.xlsx",
+        mech_value=mech_total,
+        elec_value=elec_total,
+    )
+
+    st.success("Email sent successfully.")
+
 # =====================================================
 # FOOTER
 # =====================================================

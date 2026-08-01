@@ -182,6 +182,7 @@ df["Plant"] = (
       .map(plant_map)
       .fillna(df["Plant"].astype(str))
 )
+st.write(df["Plant"].unique())
 
 # -----------------------------
 # Sidebar Filters

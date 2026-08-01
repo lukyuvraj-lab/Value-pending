@@ -302,7 +302,7 @@ with col1:
 # SEARCH
 # =====================================================
 
-st.markdown("___})
+st.markdown("___")
 st.subheader("🔍 Search")
 search = st.text_input("Search GRN").strip()
 

@@ -233,7 +233,7 @@ if selected_department != "All":
 st.markdown("---")
 st.subheader("📌 Dashboard")
 
-kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+kpi1, kpi2, kpi3 = st.columns(3)
 
 total_value = filtered["Value"].sum()
 grn_count = filtered["GRN"].nunique()
@@ -253,10 +253,6 @@ kpi3.metric(
     "📦 Lot Count",
     lot_count
 )
-
-kpi4.metric(
-    "🏭 Plants",
-    plant_count)
 
 # =====================================================
 # SUMMARY TABLES

@@ -496,26 +496,25 @@ st.download_button(
 # DOWNLOAD DETAIL
 # =====================================================
 
-# Electrical records
-st.subheader("⚡ Electrical Pending Data")
-electrical_detail = detail[detail["Department"] == "Electrical"]
+output = io.BytesIO()
 
-st.dataframe(
-    electrical_detail,
-    hide_index=True,
-    use_container_width=True
-)
+with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-st.markdown("---")
+    # Separate department data
+    electrical = detail[detail["Department"] == "Electrical"].copy()
+    mechanical = detail[detail["Department"] == "Mechanical"].copy()
 
-# Mechanical records
-st.subheader("🔧 Mechanical Pending Data")
-mechanical_detail = detail[detail["Department"] == "Mechanical"]
+    # Write each department to a separate sheet
+    electrical.to_excel(writer, sheet_name="Electrical", index=False)
+    mechanical.to_excel(writer, sheet_name="Mechanical", index=False)
 
-st.dataframe(
-    mechanical_detail,
-    hide_index=True,
-    use_container_width=True
+output.seek(0)
+
+st.download_button(
+    "📥 Download Detailed Data",
+    data=output,
+    file_name="Detailed_Pending_Data.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
 # =====================================================

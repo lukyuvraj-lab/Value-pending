@@ -94,6 +94,7 @@ if df.empty:
 MATERIAL = 0
 PLANT = 2
 GRN = 8
+GRN DATE = 9
 VALUE = 19
 
 # Validate column count
@@ -127,6 +128,10 @@ df["GRN"] = (
     .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
+
+df["GRN DATE"] = pd.to_datetime{
+    df.iloc[:, GRN_DATE],
+    error="coerce"
 
 df["Value"] = pd.to_numeric(
     df.iloc[:, VALUE],
@@ -368,6 +373,7 @@ detail = (
             "Plant",
             "Department",
             "GRN",
+            "GRN DATE",
         ],
         as_index=False
     )

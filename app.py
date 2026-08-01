@@ -269,7 +269,7 @@ summary.index = range(1, len(summary) + 1)
 
 st.dataframe(
     summary,
-    use_container_width=True
+    use_container_width=True,
     hide_index=True
 )
 

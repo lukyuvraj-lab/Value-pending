@@ -348,93 +348,86 @@ st.dataframe(
     hide_index=True
 )
 
+import io
+from openpyxl.styles import PatternFill, Font
+from openpyxl.utils import get_column_letter
+
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-    electrical = detail[detail["Department"] == "Electrical"]
-    mechanical = detail[detail["Department"] == "Mechanical"]
-    accept = detail[detail["Department"] == "Accept"]
-    black_stock = detail[detail["Department"] == "Black Stock"]
-    unfinished = detail[detail["Department"] == "Unfinished Parts"]
+    departments = [
+        "Electrical",
+        "Mechanical",
+        "Accept",
+        "Black Stock",
+        "Unfinished Parts"
+    ]
 
-    columns_order = [
+    for dept in departments:
 
-    "Plant",
+        df = detail[detail["Department"] == dept].copy()
 
-    "Department",
+        # if no records, create empty sheet with headers
+        if df.empty:
+            df = pd.DataFrame(columns=detail.columns)
 
-    "Value",
+        # Arrange columns
+        cols = [
+            "Plant",
+            "Department",
+            "Pending_Value",
+            "GRN",
+            "GRN Date",
+            "Material",
+            "Material Description",
+            "Storage Location",
+            "Vendor"
+        ]
 
-    "GRN",
+        cols = [c for c in cols if c in df.columns]
 
-    "GRN Date",
+        df = df[cols]
 
-    "Material",
-
-    "Material Description",
-
-    "Storage Location"
-
-]
-
-    electrical = electrical[columns_order]
-    mechanical = mechanical[columns_order]
-
-    electrical.to_excel(writer, sheet_name="Electrical", index=False)
-    mechanical.to_excel(writer, sheet_name="Mechanical", index=False)
-    accept.to_excel(writer, sheet_name="Accept", index=False)
-    black_stock.to_excel(writer, sheet_name="Black Stock", index=False)
-    unfinished.to_excel(writer, sheet_name="Unfinished Parts", index=False)
+        df.to_excel(
+            writer,
+            sheet_name=dept[:31],
+            index=False
+        )
 
     workbook = writer.book
 
-    header_fill = PatternFill(
+    blue_fill = PatternFill(
+        fill_type="solid",
         start_color="4F81BD",
-        end_color="4F81BD",
-        fill_type="solid"
+        end_color="4F81BD"
     )
 
-    header_font = Font(
+    white_font = Font(
         bold=True,
         color="FFFFFF"
     )
 
     for ws in workbook.worksheets:
 
-        last_row = ws.max_row + 1
-        ws.cell(last_row, 1).value = "TOTAL"
-
-        value_col = ws.max_column
-        ws.cell(
-            last_row,
-            value_col
-        ).value = f"=SUM({get_column_letter(value_col)}2:{get_column_letter(value_col)}{last_row-1})"
-
+        # Header colour
         for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
+            cell.fill = blue_fill
+            cell.font = white_font
 
+        # Filter
         ws.auto_filter.ref = ws.dimensions
 
-        for row in ws.iter_rows(min_row=2):
-            for cell in row:
-                if isinstance(cell.value, (int, float)):
-                    if float(cell.value).is_integer():
-                        cell.value = int(cell.value)
-                        cell.number_format = "#,##,##0"
-                    else:
-                        cell.number_format = "#,##,##0.00"
-
+        # Auto width
         for col in ws.columns:
-            length = max(len(str(c.value)) if c.value else 0 for c in col)
-            ws.column_dimensions[col[0].column_letter].width = length + 3
+            width = max(len(str(c.value)) if c.value else 0 for c in col)
+            ws.column_dimensions[col[0].column_letter].width = width + 3
 
 output.seek(0)
 
 st.download_button(
-    "📥 Download Excel",
-    output,
+    "📥 Download Detailed Excel",
+    data=output,
     file_name="Pending_Report.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )

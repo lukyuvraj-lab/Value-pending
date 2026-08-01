@@ -217,11 +217,15 @@ dept_summary = (
     .groupby("Department", as_index=False)["Value"]
     .sum()
 )
+from num2wrods import num2wrods
+
+dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2wrods(int(x), lang="en_IN").title()
+                                                                    )
 
 st.dataframe(
-    dept_summary,
-    use_container_width=False,    # Small table
-    hide_index=True
+    dept_summary[["Department", "Pending_Value", "Value in Words"]],
+    hide_index=True,
+     use_container_width=True
 )
 
 # =====================================================

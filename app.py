@@ -461,7 +461,7 @@ detail.rename(columns={"value": "Value"}, inplace=True)
 detail_display = detail.copy()
 
 st.dataframe(
-    detail_display.style.apply(highlight_overdue, axis=1),
+    detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )

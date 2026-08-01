@@ -218,6 +218,7 @@ dept_summary = (
     .sum()
 )
 from num2words import num2words
+
 dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2wrods(int(x), lang="en_IN").title()
                                                                     )
 

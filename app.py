@@ -382,19 +382,6 @@ workbook = writer.book
 
         color="FFFFFF"
 
-    workbook = writer.book
-
-    header_fill = PatternFill(
-        start_color="4F81BD",
-        end_color="4F81BD",
-        fill_type="solid"
-    )
-
-    header_font = Font(
-        bold=True,
-        color="FFFFFF"
-    )
-
     for ws in workbook.worksheets:
 
         last_row = ws.max_row + 1

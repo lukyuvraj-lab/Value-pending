@@ -641,7 +641,7 @@ today = pd.Timestamp.today()
 mail_text = f"""..."""
 
 # 4. Display mail text
-st.text_area(...)
+mail_text = f"""
 Dear Sir,
 
 Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.

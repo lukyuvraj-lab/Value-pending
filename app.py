@@ -307,15 +307,13 @@ with col1:
         use_container_width=False
     )
 with col1:
-   if selected_plant != "All Plants":
+   if not plant_summary.empty:
     st.subheader("📊 Plant Summary")
-
-    if not plant_summary.empty:
-        st.dataframe(
-            plant_summary,
-            use_container_width=True,
-            hide_index=True
-        )
+    st.dataframe(
+        plant_summary,
+        use_container_width=True,
+        hide_index=True
+    )
 
 display_df = filtered.copy()
 

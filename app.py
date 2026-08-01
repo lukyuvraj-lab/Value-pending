@@ -237,7 +237,7 @@ filtered_summary = filtered_summary[
 st.write(filtered[["Plant", 'Department']])
 summary = (
     filtered[
-         filtered["Plant'].notna() & (filtered{"Plant"].astype(str).str.strip() != "")
+         filtered["Plant"].notna() & (filtered{"Plant"].astype(str).str.strip() != "")
     ]
     .groupby(["Plant", "Department"])
     .agg(

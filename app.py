@@ -369,7 +369,7 @@ detail = (
         as_index=False
     )
     .agg(
-        Value=("Value", "sum")
+        Value=("Value in QualInsp.", "sum")
     )
 )
 

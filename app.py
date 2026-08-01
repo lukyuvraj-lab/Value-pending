@@ -18,6 +18,14 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+st.markdown("""
+<style>
+[data-testid="stSidebar"] {
+    min-width: 220px;
+    max-width: 220px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # -----------------------------
 # Title

@@ -349,10 +349,6 @@ detail = (
         Value=("Value in QualInsp.", "sum")
     )
 )
-detail["GRN DATE"] = pd.to_datetime(
-    detail["GRN DATE"],
-    errors="coerce"
-).dt.strftime("%Y-%m-%d")
 
 st.dataframe(
     detail,

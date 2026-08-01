@@ -12,6 +12,13 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
+[data-testid="stSidebarCollapsedControl"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
 .block-container {
     max-width: 100%;
     padding-top: 1rem;

@@ -212,6 +212,11 @@ kpi4.metric(
 st.markdown("---")
 st.subheader("⚙️ Department Pending Value")
 
+dept_summary =(filtered
+               .groupy("Department", as_index=False)
+               .agg(Pending_Value=("Value", "sum")
+ )
+)
 dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(....)
 
 st.dataframe(

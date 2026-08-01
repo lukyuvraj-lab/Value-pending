@@ -260,20 +260,19 @@ st.markdown("---")
 col1, col2 = st.columns([1.5,  1])
 
 with col1:
+    st.subheader("⚙️ Department Pending Value")
+    st.dataframe(
+        dept_summary,
+        hide_index=True,
+        use_container_width=False
+    )
+with col2:
     st.subheader("📊 Plant Summary")
     st.dataframe(
         summary,
         hide_index=True,
         use_container_width=True,
         height=180
-    )
-
-with col2:
-    st.subheader("⚙️ Department Pending Value")
-    st.dataframe(
-        dept_summary,
-        hide_index=True,
-        use_container_width=False
     )
 # =====================================================
 # SEARCH

@@ -304,7 +304,7 @@ with col1:
 
 st.markdown("___")
 st.subheader("🔍 Search")
-search = st.text_input("Search GRN").strip()
+search = st.text_input("🔍Search GRN").strip()
 
 display_df = filtered.copy()
 

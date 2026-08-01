@@ -29,8 +29,8 @@ st.markdown("""
 st.markdown("""
 <style>
 [data-testid="stSidebar"] {
-    min-width: 100px;
-    max-width: 100px;
+    min-width: 150px;
+    max-width: 150px;
 }
 </style>
 """, unsafe_allow_html=True)

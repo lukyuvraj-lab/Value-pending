@@ -350,27 +350,43 @@ detail = (
 )
 
 from pandas.tseries.offsets import BDay
+import pandas as pd
 
-# Convert GRN Date
-detail["GRN DATE"] = pd.to_datetime(detail["GRN DATE"], errors="coerce")
+# Convert GRN DATE to datetime
+detail["GRN DATE"] = pd.to_datetime(
+    detail["GRN DATE"],
+    errors="coerce"
+)
 
-# Today
+# Today's date
 today = pd.Timestamp.today().normalize()
 
-# 5 working day due date
+# Calculate 5 working day due date (Saturday & Sunday excluded)
 detail["Due Date"] = detail["GRN DATE"] + BDay(5)
 
-# Ageing (working days)
+# Show Due Date without time
+detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+
+# Calculate Ageing
 detail["5 Days Ageing"] = (
-    detail["Due Date"] - today
+    pd.to_datetime(detail["Due Date"], format="%d-%m-%Y") - today
 ).dt.days
 
+# Show GRN Date without time
+detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
+
+# Highlight overdue rows
+def highlight_overdue(row):
+    if row["5 Days Ageing"] < 0:
+        return ["background-color: #ffcccc"] * len(row)
+    return [""] * len(row)
+
+# Display table
 st.dataframe(
-    detail,
+    detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )
-
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:

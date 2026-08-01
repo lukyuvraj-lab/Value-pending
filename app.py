@@ -373,35 +373,34 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     for ws in workbook.worksheets:
 
-                headers = [cell.value for cell in ws[1]]
-        value_col = headers.index("Value") + 1
+                for ws in workbook.worksheets:
 
-        last_row = ws.max_row + 1
-        col_letter = get_column_letter(value_col)
+    headers = [cell.value for cell in ws[1]]
+    value_col = headers.index("Value") + 1
 
-        ws.cell(last_row, 1).value = "TOTAL"
-        ws.cell(last_row, value_col).value = (
-            f"=SUM({col_letter}2:{col_letter}{last_row-1})"
-        )
+    last_row = ws.max_row + 1
+    col_letter = get_column_letter(value_col)
 
-        for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
+    ws.cell(last_row, 1).value = "TOTAL"
+    ws.cell(last_row, value_col).value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
 
-        ws.auto_filter.ref = ws.dimensions
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
 
-        for row in ws.iter_rows(min_row=2):
-            for cell in row:
-                if isinstance(cell.value, (int, float)):
-                    if float(cell.value).is_integer():
-                        cell.number_format = "#,##,##0"
-                    else:
-                        cell.number_format = "#,##,##0.00"
+    ws.auto_filter.ref = ws.dimensions
 
-        for col in ws.columns:
-            length = max(len(str(c.value)) if c.value else 0 for c in col)
-            ws.column_dimensions[col[0].column_letter].width = length + 3
-output.seek(0)
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            if isinstance(cell.value, (int, float)):
+                if float(cell.value).is_integer():
+                    cell.number_format = '#,##,##0'
+                else:
+                    cell.number_format = '#,##,##0.00'
+
+    for col in ws.columns:
+        length = max(len(str(c.value)) if c.value else 0 for c in col)
+        ws.column_dimensions[col[0].column_letter].width = length + 3
 
 st.download_button(
     "📥 Download Excel",

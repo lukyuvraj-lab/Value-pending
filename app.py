@@ -127,7 +127,7 @@ df["GRN"] = (
 
 df["GRN DATE"] = pd.to_datetime(
     df.iloc[:, GRN_DATE],
-    error="coerce"
+    errors="coerce"
 )
 
 df["Value"] = pd.to_numeric(

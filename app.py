@@ -405,20 +405,15 @@ mask = (
 
 detail.loc[mask, "Due Date"] = quarter_end[mask]
 
-# Show GRN Date without time
-detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
+# Calculate Ageing
+today = pd.Timestamp.today().normalize()
 
-# Remove .000000 from GRN
+detail["5 Days Ageing"] = (
+    detail["Due Date"] - today
+).dt.days
 
-detail["GRN"] = (
-
-    pd.to_numeric(detail["GRN"], errors="coerce")
-
-    .astype("Int64")
-
-    .astype(str)
-
-)
+# Show Due Date without time
+detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
  # Remove  .00000 from value
 detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 # Highlight overdue rows

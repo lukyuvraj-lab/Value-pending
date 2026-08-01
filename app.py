@@ -431,7 +431,7 @@ detail["GRN"] = (
 )
 
  # Remove  .00000 from value
-detail["value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
+detail["value"] = detail["value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 # Highlight overdue rows
 def highlight_overdue(row):
     if row["Closing 5 Days"] < 0:

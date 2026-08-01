@@ -94,7 +94,7 @@ if df.empty:
 MATERIAL = 0
 PLANT = 2
 GRN = 8
-GRN DATE = 9
+GRN_DATE = 9
 VALUE = 19
 
 # Validate column count

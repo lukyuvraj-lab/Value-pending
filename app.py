@@ -169,6 +169,18 @@ def get_department(material):
 
 df["Department"] = df["Material"].apply(get_department)
 
+# Convert Plant codes to names
+plant_map = {
+    1201: "Ecity",
+    1202: "Vemgal"
+}
+
+df["Plant"] = (
+    pd.to_numeric(df["Plant"], errors="coerce")
+      .map(plant_map)
+      .fillna(df["Plant"])
+)
+
 # -----------------------------
 # Sidebar Filters
 # -----------------------------

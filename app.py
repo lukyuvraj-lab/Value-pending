@@ -218,7 +218,7 @@ dept_summary = (
     .sum()
 )
 
-dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2wrods(int(x), lang="en_IN").title()
+dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2words(int(x), lang="en_IN").title()
                                                                     )
 
 st.dataframe(

@@ -449,6 +449,10 @@ def highlight_overdue(row):
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
 
+# 👇 Paste here
+
+st.write(detail.columns.tolist())
+
 # Display table
 st.dataframe(
     detail.style.apply(highlight_overdue, axis=1),

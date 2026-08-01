@@ -307,7 +307,7 @@ with col1:
         use_container_width=False
     )
 with col1:
-   if plant_filter != "All Plants":
+   if selected_plant != "All Plants":
     st.subheader("📊 Plant Summary")
 
     if not plant_summary.empty:

@@ -13,10 +13,7 @@ st.set_page_config(
 # -----------------------------
 # Page Configuration
 # -----------------------------
-st.set_page_config(
-    page_title="MB52 Pending Dashboard",
-    page_icon="📊",
-    layout="wide"
+
 )
 st.markdown("""
 <style>

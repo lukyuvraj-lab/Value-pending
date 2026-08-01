@@ -336,7 +336,7 @@ detail = (filtered
               )
          )
 st.dataframe(
-    filtered[["Plant", "GRN", "Material", "Value"]],
+    detail,
     use_container_width=True,
     hide_index=True
 )

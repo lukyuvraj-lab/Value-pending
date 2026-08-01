@@ -193,10 +193,10 @@ selected_department = st.sidebar.selectbox(
     "⚙️ Department",
     dept_list
 )
-
+#Tasl Logo
 st.sidebar.markdown("---")
 
-st.sidebar.image("./tasl_logo.png", width=50)
+st.sidebar.image("./tasl_logo.png", width=200)
 
 # -----------------------------
 # Apply Filters

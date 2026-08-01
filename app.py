@@ -149,10 +149,6 @@ dept_list = [
     "Mechanical"
 ]
 
-grn_list = ["All"] + sorted(
-    df["GRN"].dropna().unique().tolist()
-)
-
 selected_plant = st.sidebar.selectbox(
     "🏭 Plant",
     plant_list

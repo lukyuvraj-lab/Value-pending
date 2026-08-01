@@ -458,7 +458,7 @@ def highlight_overdue(row):
 detail.rename(columns={"value": "Value"}, inplace=True)
 
 # Remove Closing Date column
-detail_display
+detail_display.style.apply(highlight_overdue, axis=1)
 
 st.dataframe(
     detail_display.style.apply(highlight_overdue, axis=1),

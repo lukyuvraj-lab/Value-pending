@@ -355,94 +355,34 @@ output = io.BytesIO()
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     display_df[display_df["Status"]=="Accept"].to_excel(
-
         writer,
-
         sheet_name="Accept",
-
         index=False
-
     )
 
     display_df[display_df["Status"]=="Block"].to_excel(
-
         writer,
-
         sheet_name="Block",
-
         index=False
-
     )
 
     display_df[display_df["Status"]=="Stock"].to_excel(
-
         writer,
-
         sheet_name="Stock",
-
         index=False
-
     )
 
     display_df[display_df["Status"]=="Unfinished Parts"].to_excel(
-
         writer,
-
         sheet_name="Unfinished Parts",
-
         index=False
     )
-
-    workbook = writer.book
-
-    header_fill = PatternFill(
-        start_color="4F81BD",
-        end_color="4F81BD",
-        fill_type="solid"
-    )
-
-    header_font = Font(
-        bold=True,
-        color="FFFFFF"
-    )
-
-    for ws in workbook.worksheets:
-
-        last_row = ws.max_row + 1
-
-        ws.cell(last_row, 1).value = "TOTAL"
-
-        value_col = ws.max_column
-
-        ws.cell(
-            last_row,
-            value_col
-        ).value = f"=SUM({get_column_letter(value_col)}2:{get_column_letter(value_col)}{last_row-1})"
-
-        for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
-
-        ws.auto_filter.ref = ws.dimensions
-        # Format numbers (remove unnecessary .00)
-for row in ws.iter_rows(min_row=2):
-    for cell in row:
-        if isinstance(cell.value, (int, float)):
-            if float(cell.value).is_integer():
-                cell.value = int(cell.value)
-                cell.number_format = "0"
-            else:
-                cell.number_format = "#,##0.00"
-
-        for col in ws.columns:
-            length = max(len(str(c.value)) if c.value else 0 for c in col)
-            ws.column_dimensions[col[0].column_letter].width = length + 3
 
 output.seek(0)
 
 st.download_button(
     "📥 Download Excel",
-    output,
+    data=output,
     file_name="Pending_Report.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )

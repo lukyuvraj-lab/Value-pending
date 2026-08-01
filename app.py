@@ -468,7 +468,7 @@ detail_display = detail.drop(columns=["Closing Date"], errors="ignore")
 st.write("Before table:", round(time.perf_counter() - start, 2), "sec")
 
 st.dataframe(
-    detail_disply.style.apply(highlight_overdue, axis=1),
+    detail_display.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )

@@ -383,7 +383,7 @@ if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
- if detail_grn_date != "All":,
+if detail_grn date != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN DATE"].astype(str) == detail_grn_date
     ]

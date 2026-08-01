@@ -409,14 +409,14 @@ detail.loc[mask, "Due Date"] = quarter_end[mask]
 # Calculate Ageing
 today = pd.Timestamp.today().normalize()
 
-detail["Due Date"] = (
+detail["Closing 5 Days"] = (
     detail["Due Date"] - today
 ).dt.days
 
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 
 # Show Due Date without time
-detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+detail["Due day"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
 
 # Remove .000000 from GRN
 
@@ -449,15 +449,13 @@ def highlight_overdue(row):
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
 
-st.subheader("Debug - Column Names")
-st.write(detail.columns)
-
 # Display table
 st.dataframe(
     detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )
+#Excel Download
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:

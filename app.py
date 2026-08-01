@@ -7,12 +7,24 @@ from openpyxl.utils import get_column_letter
 
 st.set_page_config(
     page_title="HQA E&M Open Receipt",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+st.markdown("""
+<style>
+.block-container {
+    max-width: 100%;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
 
 # -----------------------------
 # Page Configuration
 # -----------------------------
+
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>

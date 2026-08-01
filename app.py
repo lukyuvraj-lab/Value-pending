@@ -220,7 +220,7 @@ dept_summary = (
 
 st.dataframe(
     dept_summary,
-    use_container_width=Flase,    # Small table
+    use_container_width=False,    # Small table
     hide_index=True
 )
 

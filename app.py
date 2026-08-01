@@ -348,22 +348,48 @@ st.dataframe(
     hide_index=True
 )
 
+import io
+
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-    electrical = detail[detail["Department"] == "Electrical"]
-    mechanical = detail[detail["Department"] == "Mechanical"]
+    display_df[display_df["Status"]=="Accept"].to_excel(
 
-    electrical.to_excel(
         writer,
-        sheet_name="Electrical",
+
+        sheet_name="Accept",
+
         index=False
+
     )
 
-    mechanical.to_excel(
+    display_df[display_df["Status"]=="Block"].to_excel(
+
         writer,
-        sheet_name="Mechanical",
+
+        sheet_name="Block",
+
+        index=False
+
+    )
+
+    display_df[display_df["Status"]=="Stock"].to_excel(
+
+        writer,
+
+        sheet_name="Stock",
+
+        index=False
+
+    )
+
+    display_df[display_df["Status"]=="Unfinished Parts"].to_excel(
+
+        writer,
+
+        sheet_name="Unfinished Parts",
+
         index=False
     )
 

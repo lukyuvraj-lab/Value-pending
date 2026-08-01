@@ -392,6 +392,18 @@ detail["5 Days Ageing"] = (
 # Show GRN Date without time
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 
+# Remove .000000 from GRN NO
+
+detail["GRN NO"] = (
+
+    pd.to_numeric(detail["GRN NO"], errors="coerce")
+
+    .astype("Int64")
+
+    .astype(str)
+
+)
+
 # Highlight overdue rows
 def highlight_overdue(row):
     if row["5 Days Ageing"] < 0:

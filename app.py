@@ -331,7 +331,7 @@ if detail_grn != "All":
 st.dataframe(
     filtered_detail,
     use_container_width=True,
-    height=500
+    hide_index=True
 )
 # =====================================================
 # DOWNLOAD SUMMARY

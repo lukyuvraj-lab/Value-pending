@@ -231,7 +231,7 @@ st.subheader("📊 Plant & Department Summary")
 
 # Remove blank Plant rows
 filtered_summary = filtered.copy()
-filtered_summary = filtered summary[
+filtered_summary = filtered_summary[
     filtered_summary["Plant"].fillna("").astype(str).str.strip() != ""
 ]
 

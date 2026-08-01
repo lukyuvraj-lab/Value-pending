@@ -327,7 +327,7 @@ if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
-detailed = filered[filered["Plant'].fillna("").astype(str).str.strip() != ""]
+detailed = filered[filered["Plant"].fillna("").astype(str).str.strip() != ""]
 st.dataframe(
     filtered,
     use_container_width=True,

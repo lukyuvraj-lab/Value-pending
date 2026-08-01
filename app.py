@@ -648,6 +648,16 @@ Tata Advanced Systems Limited
 
     mail.Send()      # Use mail.Display() if you want to review before sending
 
+mech_total = dept_summary.loc[
+    dept_summary["Department"] == "Mechanical",
+    "Pending_Value"
+].sum()
+
+elec_total = dept_summary.loc[
+    dept_summary["Department"] == "Electrical",
+    "Pending_Value"
+].sum()
+
 if st.button("📧 Send Status Mail"):
 
     send_status_mail(

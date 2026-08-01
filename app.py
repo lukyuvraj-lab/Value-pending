@@ -525,7 +525,8 @@ ws.cell(row=last_row, column=value_col).value = (
 ws.cell(row=last_row, column=value_col).font = Font(bold=True)
 ws.cell(row=last_row, column=value_col).number_format = "#,##0.00"
     # Auto width
-    for col in ws.columns:
+      
+        for col in ws.columns:
         max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)
         ws.column_dimensions[col[0].column_letter].width = max_len + 3
 

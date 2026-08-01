@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 [data-testid="stSidebarCollapsedControl"] {
-    display: none;
+    display: hide;
 }
 </style>
 """, unsafe_allow_html=True)

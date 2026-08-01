@@ -248,26 +248,6 @@ summary = (
     .reset_index()
 )
 
-total = pd.DataFrame({
-    "Plant": ["TOTAL"],
-    "Department": [""],
-    "GRN_Count": [summary["GRN_Count"].sum()],
-    "Lot_Count": [summary["Lot_Count"].sum()],
-    "Pending_Value": [summary["Pending_Value"].sum()]
-})
-
-summary = pd.concat(
-    [summary, total],
-    ignore_index=True
-)
-# Show TOTAL in both columns
-
-summary.loc[summary.index[-1], "Plant"] = "TOTAL"
-
-# Start index from 1 to 4
-
-summary.index = range(1, len(summary) + 1)
-
 st.dataframe(
     summary,
     use_container_width=True,

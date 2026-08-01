@@ -365,12 +365,12 @@ detail = (
             "Department",
             "GRN",
             "GRN DATE",
-            "Value"
+            "value"
         ],
         as_index=False
     )
     .agg(
-        Value=("Value", "sum")
+        Value=("value", "sum")
     )
 )
 

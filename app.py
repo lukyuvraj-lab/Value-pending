@@ -628,7 +628,7 @@ st.download_button(
 # =====================================================
 
 # Calculate values
-value_num = pd.to_numeric(detail["value"], errors="coerce")
+Value_num = pd.to_numeric(detail["Value"], errors="coerce")
 
 mech_total = value_num[detail["Department"] == "Mechanical"].sum()
 elec_total = value_num[detail["Department"] == "Electrical"].sum()

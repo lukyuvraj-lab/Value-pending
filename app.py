@@ -253,7 +253,7 @@ st.markdown("---")
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.subheader("📊 Plant & Department Summary")
+    st.subheader("📊 Plant Summary")
     st.dataframe(
         summary,
         hide_index=True,

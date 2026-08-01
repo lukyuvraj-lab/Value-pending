@@ -188,13 +188,7 @@ if selected_department != "All":
 # KPI CARDS
 # =====================================================
 st.markdown("---")
-with col1:
-    st.subheader("📌 Dashboard")
-with col2:
-    st.markdown(
-        f"<span style='font-size:16px;'>📅 {datetime.now().strftime('%d-%m-%Y')}</span>",
-        unsafe_allow_html=True
-    )
+st.subheader("📌 Dashboard")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 

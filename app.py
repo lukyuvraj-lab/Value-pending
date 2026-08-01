@@ -364,21 +364,23 @@ accept.to_excel(writer, sheet_name="Accept", index=False)
 black_stock.to_excel(writer, sheet_name="Black Stock", index=False)
 unfinished.to_excel(writer, sheet_name="Unfinished Parts", index=False)
 
-wrokbook = writer.book
+workbook = writer.book
 
-header_fill = PatternFill(
-    start_colour
-    electrical.to_excel(
-        writer,
-        sheet_name="Electrical",
-        index=False
+    header_fill = PatternFill(
+
+        start_color="4F81BD",
+
+        end_color="4F81BD",
+
+        fill_type="solid"
+
     )
 
-    mechanical.to_excel(
-        writer,
-        sheet_name="Mechanical",
-        index=False
-    )
+    header_font = Font(
+
+        bold=True,
+
+        color="FFFFFF"
 
     workbook = writer.book
 

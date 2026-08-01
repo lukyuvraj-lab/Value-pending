@@ -612,37 +612,35 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-# Department totals
+# Calculate values
 mech_total = detail.loc[detail["Department"] == "Mechanical", "Value"].sum()
 elec_total = detail.loc[detail["Department"] == "Electrical", "Value"].sum()
-total_pending = mech_total + elec_total
+total_value = mech_total + elec_total
 
-mail_text = f"""Dear Sir,
+today = pd.Timestamp.today()
 
-Please find below the HQA Open Receipt Pending Value as of {pd.Timestamp.today().strftime('%d-%b-%Y')}.
+mail_text = f"""
+Dear Sir,
+
+Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
 
 Mechanical Department : ₹ {mech_total:,.0f}
-
 Electrical Department : ₹ {elec_total:,.0f}
 
-------------------------------------------
-Total Pending Value   : ₹ {total_pending:,.0f}
-------------------------------------------
-
-The detailed pending GRN report is attached for your kind reference.
+Total Pending Value   : ₹ {total_value:,.0f}
 
 Regards,
-
-HQA Team
-Tata Advanced Systems Limited
+HQA Team.
 """
 
-st.subheader("📧 Mail Text")
+st.subheader("📧 Mail Content")
 st.text_area(
     "Copy and paste into Outlook",
-    value=mail_text,
-    height=250,
+    mail_text,
+    height=220,
 )
+
+st.download_button("📥 Download Detailed Data", ...)
 # =====================================================
 # FOOTER
 # =====================================================

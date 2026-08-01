@@ -335,13 +335,13 @@ filtered_detail = filtered_detail[
 ]
 
 detail = (
-    filtered
-    .groupby(
+    filtered.groupby(
         [
             "Plant",
             "Department",
-            "GRN",
+            "GRN NO",
             "GRN DATE",
+            "Vendor"
         ],
         as_index=False
     )
@@ -349,6 +349,10 @@ detail = (
         Value=("Value in QualInsp.", "sum")
     )
 )
+detail["GRN DATE"] = pd.to_datetime(
+    detail["GRN DATE"],
+    errors="coerce"
+).dt.strftime("%Y-%m-%d")
 
 st.dataframe(
     detail,

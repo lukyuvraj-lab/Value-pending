@@ -381,6 +381,7 @@ col_letter = get_column_letter(value_col)
 
 ws.cell(last_row, 1).value = "TOTAL"
 ws.cell(last_row, value_col).value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
+)
 
         for cell in ws[1]:
             cell.fill = header_fill

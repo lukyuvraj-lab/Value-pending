@@ -639,7 +639,7 @@ st.subheader("📧 Mail Content")
 st.text_area(
     "Copy and paste into Outlook",
     mail_text,
-    height=220,
+    height=300,
 )
 
 # Remove this line

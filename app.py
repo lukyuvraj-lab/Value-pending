@@ -389,7 +389,7 @@ detail["GRN DATE"] = pd.to_datetime(
     errors="coerce"
 )
 # Today's date
-today = pd.Timestamp.today().normalize()
+today = pd.Timestamp(datetime.now(ZoneInfo("Asia/Kolkata")).date())
 
 # Calculate 5 working day due date (Saturday & Sunday excluded)
 detail["Due Date"] = detail["GRN DATE"] + BDay(5)

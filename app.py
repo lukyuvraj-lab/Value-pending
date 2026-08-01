@@ -381,7 +381,7 @@ from pandas.tseries.offsets import BDay
 import pandas as pd
 
 # Convert GRN DATE to datetime
-detail["GRN DATE"] = pd.to_datet(
+detail["GRN DATE"] = pd.to_date(
     detail["GRN DATE"],
     errors="coerce"
 )

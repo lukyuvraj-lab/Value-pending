@@ -46,19 +46,10 @@ st.markdown("""
 # -----------------------------
 # Title
 # -----------------------------
-col1, col2 = st.columns([2, 1])
+col1 = st.columns([2, 1])
 
 with col1:
     st.title("📊 HQA E&M Open Recepite Dashboard")
-with col2:
-    st.markdown(
-        f"""
-        <div style="margin-top:90px; text-align:right; font-size:15px;">
-            📅 {datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y")}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 # -----------------------------
 # Upload Excel

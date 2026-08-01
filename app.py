@@ -379,7 +379,6 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
     "Storage Location",
     "Vendor"
 ]
-        ]
 
         # Keep only columns that exist
         columns = [c for c in columns if c in df.columns]

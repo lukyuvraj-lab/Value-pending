@@ -72,7 +72,7 @@ def load_excel(uploaded_file):
     return pd.read_excel(uploaded_file)
 
 try:
-    df = pd.read_excel(uploaded_file)
+    df = load_excel(uploaded_file)
 except Exception as e:
     st.error(f"Unable to read Excel file.\n\n{e}")
     st.stop()

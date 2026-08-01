@@ -358,6 +358,30 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
     black_stock = detail[detail["Department"] == "Black Stock"]
     unfinished = detail[detail["Department"] == "Unfinished Parts"]
 
+    columns_order = [
+
+    "Plant",
+
+    "Department",
+
+    "Value",
+
+    "GRN",
+
+    "GRN Date",
+
+    "Material",
+
+    "Material Description",
+
+    "Storage Location"
+
+]
+
+electrical = electrical[columns_order]
+
+mechanical = mechanical[columns_order]
+
     electrical.to_excel(writer, sheet_name="Electrical", index=False)
     mechanical.to_excel(writer, sheet_name="Mechanical", index=False)
     accept.to_excel(writer, sheet_name="Accept", index=False)

@@ -209,53 +209,27 @@ kpi4.metric(
     "🏭 Plants",
     plant_count)
 
-# =====================================================
-# DEPARTMENT SUMMARY
-# =====================================================
 st.markdown("---")
-st.subheader("⚙️ Department Pending Value")
 
-dept_summary =(
-    filtered
-    .groupby("Department", as_index=False)
-    .agg(Pending_Value=("Value", "sum")
- )
-)
-st.dataframe(
-    dept_summary,
-    hide_index=True,
-     use_container_width=True
-)
+col1, col2 = st.columns(2)
 
-# =====================================================
-# PLANT + DEPARTMENT SUMMARY
-# =====================================================
-st.markdown("---")
-st.subheader("📊 Plant & Department Summary")
-
-# Remove blank Plant rows
-filtered_summary = filtered.copy()
-filtered_summary = filtered_summary[
-    filtered_summary["Plant"].fillna("").astype(str).str.strip() != ""
-]
-summary = (
-    filtered[
-         filtered["Plant"].notna() & (filtered["Plant"].astype(str).str.strip() != "")
-    ]
-    .groupby(["Plant", "Department"])
-    .agg(
-        GRN_Count=("GRN", "nunique"),
-        Lot_Count=("GRN", "count"),
-        Pending_Value=("Value", "sum")
+with col1:
+    st.subheader("📊 Plant & Department Summary")
+    st.dataframe(
+        summary,
+        hide_index=True,
+        use_container_width=True
     )
-    .reset_index()
-)
 
-st.dataframe(
-    summary,
-    use_container_width=True,
-    hide_index=True
-)
+with col2:
+    st.subheader("⚙️ Department Pending Value")
+    st.dataframe(
+        dept_summary[
+            ["Department", "Pending_Value", "Value in Words"]
+        ],
+        hide_index=True,
+        use_container_width=True
+    )
 
 # =====================================================
 # SEARCH

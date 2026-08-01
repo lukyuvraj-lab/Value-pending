@@ -320,7 +320,7 @@ table_height = 35 * (len(plant_summary) + 1) + 5
 st.dataframe(
     plant_summary,
     hide_index=True,
-    width=650,
+    width=430,
     height=table_height
 )
 display_df = filtered.copy()

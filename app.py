@@ -357,19 +357,20 @@ if detail_grn != "All":
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-st.write(filtered_detail.columns.tolist())
+
 detail = (
     filtered_detail.groupby(
         [
             "Plant",
             "Department",
             "GRN",
-            "GRN DATE"
+            "GRN DATE",
+            "Value"
         ],
         as_index=False
     )
     .agg(
-        Value=("Value in QualInsp.", "sum")
+        Value=("Value", "sum")
     )
 )
 

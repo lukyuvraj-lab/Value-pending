@@ -423,7 +423,7 @@ detail["GRN"] = (
 detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 # Highlight overdue rows
 def highlight_overdue(row):
-    if row["Ageing"] < 0:
+    if row["5 Days Ageing"] < 0:
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
 

@@ -67,6 +67,10 @@ if uploaded_file is None:
 # -----------------------------
 # Read Excel
 # -----------------------------
+@st.cache_data
+def load_excel(uploaded_file):
+    return pd.read_excel(uploaded_file)
+
 try:
     df = pd.read_excel(uploaded_file)
 except Exception as e:

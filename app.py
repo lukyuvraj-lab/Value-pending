@@ -348,8 +348,6 @@ st.dataframe(
     hide_index=True
 )
 
-import io
-
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:

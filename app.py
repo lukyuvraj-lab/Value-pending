@@ -132,8 +132,11 @@ df["Value"] = pd.to_numeric(
 # -----------------------------
 # Load Electrical Material Master
 # -----------------------------
-master = pd.read_excel("material_master.xlsx", header=None)
+@st.cache_data
+def load_master():
+    return pd.read_excel("material_master.xlsx", header=None)
 
+master = load_master()
 electrical_items = set(
     master[0]
     .fillna(0)

@@ -74,6 +74,7 @@ start = time.perf_counter()
 
 try:
     df = load_excel(uploaded_file)
+    st.write("Read Excel:", round(time.perf_counter() - start, 2), "sec")
 except Exception as e:
     st.error(f"Unable to read Excel file.\n\n{e}")
     st.stop()

@@ -149,10 +149,6 @@ dept_list = [
     "Mechanical"
 ]
 
-material_list = ["All"] + sorted(
-    df["Material"].dropna().unique().tolist()
-)
-
 grn_list = ["All"] + sorted(
     df["GRN"].dropna().unique().tolist()
 )

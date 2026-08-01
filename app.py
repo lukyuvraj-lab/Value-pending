@@ -369,15 +369,16 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
         # Select columns
         columns = [
-            "Plant",
-            "Department",
-            "Pending_Value",      # <-- Change this if your column name is different
-            "GRN",
-            "GRN Date",
-            "Material",
-            "Material Description",
-            "Storage Location",
-            "Vendor"
+    "Plant",
+    "Department",
+    "Value in QualInsp.",
+    "GRN NO",
+    "GRN DATE",
+    "Material",
+    "Material Description",
+    "Storage Location",
+    "Vendor"
+]
         ]
 
         # Keep only columns that exist

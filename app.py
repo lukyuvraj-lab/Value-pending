@@ -302,7 +302,9 @@ with col1:
 # SEARCH
 # =====================================================
 
-search = st.text_input("🔍 Search Material / GRN").strip()
+st.markdown("___})
+st.subheader("🔍 Search")
+search = st.text_input("Search GRN").strip()
 
 display_df = filtered.copy()
 

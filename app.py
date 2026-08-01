@@ -353,22 +353,68 @@ st.dataframe(
     hide_index=True
 )
 
-# 👇 ADD THE DOWNLOAD CODE HERE
-
-import io
-
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
-    detail.to_excel(writer, index=False, sheet_name="Filtered_Data")
+
+    electrical = detail[detail["Department"] == "Electrical"]
+    mechanical = detail[detail["Department"] == "Mechanical"]
+
+    electrical.to_excel(
+        writer,
+        sheet_name="Electrical",
+        index=False
+    )
+
+    mechanical.to_excel(
+        writer,
+        sheet_name="Mechanical",
+        index=False
+    )
+
+    workbook = writer.book
+
+    header_fill = PatternFill(
+        start_color="4F81BD",
+        end_color="4F81BD",
+        fill_type="solid"
+    )
+
+    header_font = Font(
+        bold=True,
+        color="FFFFFF"
+    )
+
+    for ws in workbook.worksheets:
+
+        last_row = ws.max_row + 1
+
+        ws.cell(last_row, 1).value = "TOTAL"
+
+        value_col = ws.max_column
+
+        ws.cell(
+            last_row,
+            value_col
+        ).value = f"=SUM({get_column_letter(value_col)}2:{get_column_letter(value_col)}{last_row-1})"
+
+        for cell in ws[1]:
+            cell.fill = header_fill
+            cell.font = header_font
+
+        ws.auto_filter.ref = ws.dimensions
+
+        for col in ws.columns:
+            length = max(len(str(c.value)) if c.value else 0 for c in col)
+            ws.column_dimensions[col[0].column_letter].width = length + 3
 
 output.seek(0)
 
 st.download_button(
-    label="📥 Download Filtered Data (Excel)",
-    data=output,
-    file_name="Filtered_Pending_Data.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "📥 Download Excel",
+    output,
+    file_name="Pending_Report.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 # =====================================================
 # DOWNLOAD SUMMARY

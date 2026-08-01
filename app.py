@@ -432,6 +432,17 @@ detail["GRN"] = (
 
  # Remove  .00000 from value
 detail["value"] = detail["value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
+
+detail.rename(columns={
+    "Plant": "Plant",
+    "Department": "Department",
+    "GRN": "GRN",
+    "GRN DATE": "GRN Date",
+    "Due Date": "Closing Date",
+    "Closing 5 Days": "Days Left",
+    "Value": "Pending Value (₹)"
+}, inplace=True)
+
 # Highlight overdue rows
 def highlight_overdue(row):
     if row["Due Date"] < 0:

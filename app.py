@@ -352,7 +352,7 @@ output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-    electrical = detail[detail["Department"] == "Electrical"]
+electrical = detail[detail["Department"] == "Electrical"]
 mechanical = detail[detail["Department"] == "Mechanical"]
 accept = detail[detail["Department"] == "Accept"]
 black_stock = detail[detail["Department"] == "Black Stock"]

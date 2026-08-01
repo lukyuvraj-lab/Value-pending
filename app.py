@@ -45,7 +45,7 @@ st.markdown("""
 # -----------------------------
 # Title
 # -----------------------------
-col1, col2 = st.columns([4, 4])
+col1, col2 = st.columns([2, 1])
 
 with col1:
     st.title("📊 HQA E&M Open Recepite Dashboard")

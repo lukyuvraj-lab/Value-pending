@@ -259,7 +259,7 @@ st.markdown("---")
 
 col1, col2 = st.columns([3, 3])
 
-with col2:
+with col1:
     st.subheader("⚙️ Department Pending Value")
     st.dataframe(
         dept_summary,

@@ -171,14 +171,16 @@ df["Department"] = df["Material"].apply(get_department)
 
 # Convert Plant codes to names
 plant_map = {
-    1201: "Ecity",
-    1202: "Vemgal"
+    "1201": "Ecity",
+    "1202": "Vemgal"
 }
 
 df["Plant"] = (
-    pd.to_numeric(df["Plant"], errors="coerce")
+    df["Plant"]
+      .astype(str)
+      .str.strip()
       .map(plant_map)
-      .fillna(df["Plant"])
+      .fillna(df["Plant"].astype(str))
 )
 
 # -----------------------------

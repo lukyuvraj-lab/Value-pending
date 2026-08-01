@@ -76,10 +76,6 @@ if uploaded_file is None:
 # -----------------------------
 try:
     df = pd.read_excel(uploaded_file)
-
-    # Show all Excel column names
-    st.write(df.columns.tolist())
-
 except Exception as e:
     st.error(f"Unable to read Excel file.\n\n{e}")
     st.stop()
@@ -129,9 +125,10 @@ df["GRN"] = (
     .str.strip()
 )
 
-df["GRN DATE"] = pd.to_datetime{
+df["GRN DATE"] = pd.to_datetime(
     df.iloc[:, GRN_DATE],
     error="coerce"
+)
 
 df["Value"] = pd.to_numeric(
     df.iloc[:, VALUE],

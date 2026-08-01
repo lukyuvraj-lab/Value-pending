@@ -344,6 +344,29 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+st.dataframe(
+    detail,
+    use_container_width=True,
+    hide_index=True
+)
+
+# 👇 ADD THE DOWNLOAD CODE HERE
+
+import io
+
+output = io.BytesIO()
+
+with pd.ExcelWriter(output, engine="openpyxl") as writer:
+    detail.to_excel(writer, index=False, sheet_name="Filtered_Data")
+
+output.seek(0)
+
+st.download_button(
+    label="📥 Download Filtered Data (Excel)",
+    data=output,
+    file_name="Filtered_Pending_Data.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+)
 # =====================================================
 # DOWNLOAD SUMMARY
 # =====================================================

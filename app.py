@@ -337,7 +337,13 @@ filtered_detail = filtered_detail[
 detail["GRN DATE"] = pd.to_datetime(
     detail["GRN DATE"],
     errors="coerce"
+).dt.strftime("%Y-%m-%d")detail["GRN DATE"] = pd.to_datetime(
+    detail["GRN DATE"],
+    errors="coerce"
 ).dt.strftime("%Y-%m-%d")
+
+st.write(detail.columns.tolist())
+st.stop()
 
 detail = (
     filtered.groupby(
@@ -353,9 +359,6 @@ detail = (
         Value=("Value in QualInsp.", "sum")
     )
 )
-
-st.write(detail.columns.tolist())
-st.stop()
 
 st.dataframe(
     detail,

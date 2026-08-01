@@ -513,7 +513,7 @@ st.markdown("---")
 
 st.caption(
     f"""
-MB52 Pending Dashboard
+HQA E&M Open Receipt Pending Dashboard
 
 Records : {len(display_df):,}
 

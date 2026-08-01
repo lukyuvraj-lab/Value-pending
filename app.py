@@ -327,15 +327,20 @@ if detail_grn != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN"].astype(str) == detail_grn
     ]
-filtered = filtered[
-   filtered["Plant"].fillna("").astype(str).str.strip() !=""
+filtered_detail = filtered_detail[
+    filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-st.write(filtered.colums)
-detail = (filtered
-          .groupy(["Plant", "GRN", "Material"], as_index=False)
-          .agg(value=("Value", "sum")
-              )
-  )
+
+st.write(filtered_detail.columns)
+
+detail = (
+    filtered_detail
+    .groupby(["Plant", "GRN"], as_index=False)
+    .agg(
+        Value=("Value", "sum")
+    )
+)
+
 st.dataframe(
     detail,
     use_container_width=True,

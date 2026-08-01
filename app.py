@@ -210,7 +210,7 @@ kpi4.metric(
 # DEPARTMENT SUMMARY
 # =====================================================
 st.markdown("---")
-st.subheader("⚙️ Department-wise Pending Value")
+st.subheader("⚙️ Department Pending Value")
 
 dept_summary = (
     filtered

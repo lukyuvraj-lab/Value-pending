@@ -493,17 +493,39 @@ st.download_button(
 )
 
 # =====================================================
-# DOWNLOAD DETAIL
+# DOWNLOAD DETAIL (EXCEL)
 # =====================================================
 
-detail_csv = display_df.to_csv(index=False).encode("utf-8")
+output = io.BytesIO()
+
+with pd.ExcelWriter(output, engine="openpyxl") as writer:
+
+    display_df.to_excel(writer, sheet_name="Detailed Data", index=False)
+
+    ws = writer.sheets["Detailed Data"]
+
+    # Auto width
+    for col in ws.columns:
+        max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max_len + 3
+
+    # Number format
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            if isinstance(cell.value, (int, float)):
+                if float(cell.value).is_integer():
+                    cell.value = int(cell.value)
+                    cell.number_format = "#,##0"
+                else:
+                    cell.number_format = "#,##0.00"
+
+output.seek(0)
 
 st.download_button(
     label="📥 Download Detailed Data",
-    data=detail_csv,
-    file_name=f"MB52_Detail_{datetime.now().strftime('%d%m%Y')}.csv",
-    mime="text/csv"
-
+    data=output,
+    file_name=f"HQA_EM_Open_Receipt_{datetime.now().strftime('%d%m%Y')}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
 # =====================================================

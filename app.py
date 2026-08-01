@@ -263,9 +263,7 @@ summary = pd.concat(
 
 summary.loc[summary.index[-1], "Plant"] = "TOTAL"
 
-summary.loc[summary.index[-1], "Department"] = "TOTAL"
-
-# Start index from 1
+# Start index from 1 to 4
 
 summary.index = range(1, len(summary) + 1)
 

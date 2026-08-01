@@ -337,10 +337,7 @@ filtered_detail = filtered_detail[
 detail["GRN DATE"] = pd.to_datetime(
     detail["GRN DATE"],
     errors="coerce"
-).dt.strftime("%Y-%m-%d")detail["GRN DATE"] = pd.to_datetime(
-    detail["GRN DATE"],
-    errors="coerce"
-).dt.strftime("%Y-%m-%d")
+).dt.strftime("%Y-%m-%d)
 
 st.write(detail.columns.tolist())
 st.stop()

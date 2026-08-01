@@ -612,29 +612,22 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-from datetime import datetime
+# Department totals
+mech_total = detail.loc[detail["Department"] == "Mechanical", "Value"].sum()
+elec_total = detail.loc[detail["Department"] == "Electrical", "Value"].sum()
+total_pending = mech_total + elec_total
 
-def send_status_mail(excel_file, mech_value, elec_value):
-    total_value = mech_value + elec_value
+mail_text = f"""Dear Sir,
 
-    outlook = win32.Dispatch("Outlook.Application")
-    mail = outlook.CreateItem(0)
+Please find below the HQA Open Receipt Pending Value as of {pd.Timestamp.today().strftime('%d-%b-%Y')}.
 
-    mail.To = "manager@company.com"
-    mail.CC = ""
-    mail.Subject = f"HQA Open Receipt Pending Value Status - {datetime.now().strftime('%d-%b-%Y')}"
+Mechanical Department : ₹ {mech_total:,.0f}
 
-    mail.Body = f"""Dear Sir,
+Electrical Department : ₹ {elec_total:,.0f}
 
-Please find below the HQA Open Receipt Pending Value status as of {datetime.now().strftime('%d-%b-%Y')}.
-
-Mechanical Department : ₹ {mech_value:,.0f}
-
-Electrical Department : ₹ {elec_value:,.0f}
-
--------------------------------------------------
-Total Pending Value   : ₹ {total_value:,.0f}
--------------------------------------------------
+------------------------------------------
+Total Pending Value   : ₹ {total_pending:,.0f}
+------------------------------------------
 
 The detailed pending GRN report is attached for your kind reference.
 
@@ -644,30 +637,12 @@ HQA Team
 Tata Advanced Systems Limited
 """
 
-    mail.Attachments.Add(excel_file)
-
-    mail.Send()      # Use mail.Display() if you want to review before sending
-
-mech_total = dept_summary.loc[
-    dept_summary["Department"] == "Mechanical",
-    "Pending_Value"
-].sum()
-
-elec_total = dept_summary.loc[
-    dept_summary["Department"] == "Electrical",
-    "Pending_Value"
-].sum()
-
-if st.button("📧 Send Status Mail"):
-
-    send_status_mail(
-        excel_file="HQA_Open_Receipt_Details.xlsx",
-        mech_value=mech_total,
-        elec_value=elec_total,
-    )
-
-    st.success("Email sent successfully.")
-
+st.subheader("📧 Mail Text")
+st.text_area(
+    "Copy and paste into Outlook",
+    value=mail_text,
+    height=250,
+)
 # =====================================================
 # FOOTER
 # =====================================================

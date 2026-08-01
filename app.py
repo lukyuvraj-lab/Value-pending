@@ -504,30 +504,26 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     
     from openpyxl.styles import Font
-    ws = writer.sheets["Detailed Data"]
- 
-# Find "Value in QualInsp" column
-value_col = None
-for cell in ws[1]:
-    if cell.value == "Value in QualInsp":
-        value_col = cell.column
-        break
+from openpyxl.utils import get_column_letter
 
-# Add TOTAL row
-if value_col:
-    last_row = ws.max_row + 1
+ws = writer.sheets["Detailed Data"]
 
-    # TOTAL text
-    total_cell = ws.cell(row=last_row, column=1)
-    total_cell.value = "TOTAL"
-    total_cell.font = Font(bold=True)
+last_row = ws.max_row + 1
 
-    # SUM formula
-    sum_cell = ws.cell(row=last_row, column=value_col)
-    col_letter = sum_cell.column_letter
-    sum_cell.value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
-    sum_cell.font = Font(bold=True)
-    sum_cell.number_format = "#,##0.00"
+# TOTAL text
+ws.cell(row=last_row, column=1).value = "TOTAL"
+ws.cell(row=last_row, column=1).font = Font(bold=True)
+
+# Column T = 20
+value_col = 20
+col_letter = get_column_letter(value_col)   # Returns "T"
+
+# Sum formula
+ws.cell(row=last_row, column=value_col).value = (
+    f"=SUM({col_letter}2:{col_letter}{last_row-1})"
+)
+ws.cell(row=last_row, column=value_col).font = Font(bold=True)
+ws.cell(row=last_row, column=value_col).number_format = "#,##0.00"
     # Auto width
     for col in ws.columns:
         max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)

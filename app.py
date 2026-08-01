@@ -307,12 +307,15 @@ with col1:
         use_container_width=False
     )
 with col1:
-    st.subheader("📊 Plant Summary")
+   st.subheader("📊 Plant Summary")
+
+if plant_summary.empty:
+    st.info("No Plant Summary available for the selected filters.")
+else:
     st.dataframe(
-        summary,
-        hide_index=True,
+        plant_summary,
         use_container_width=True,
-        height=180
+        hide_index=True
     )
 
 display_df = filtered.copy()

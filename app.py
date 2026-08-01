@@ -331,7 +331,7 @@ filtered = filtered[
    filtered["Plant"].fillna("").astype(str).str.strip() !=""
 ]
 detail = (filtered
-          .groupy(["Plant", "GRN", "Material code"], as_index=False)
+          .groupy(["Plant", "GRN", "Material",], as_index=False)
           .agg(value=("Value", "sum")
               )
          )

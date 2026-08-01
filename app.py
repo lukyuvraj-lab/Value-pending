@@ -335,11 +335,20 @@ filtered_detail = filtered_detail[
 ]
 
 detail = (
-    filtered_detail
-    .groupby(["Plant", "Department", "GRN"], as_index=False)
-    .agg(
-        Value=("Value", "sum")
+    filtered
+    .groupby(
+        [
+            "Plant",
+            "Department",
+            "GRN",
+            "GRN DATE",
+        ],
+        as_index=False
     )
+    .agg(
+        Value=("Value in QualInsp.", "sum")
+    )
+)
 )
 
 st.dataframe(

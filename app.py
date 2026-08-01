@@ -639,7 +639,7 @@ st.subheader("📧 Mail Content")
 st.markdown("""
 <style>
 textarea {
-    font-size: 18px !important;
+    font-size: 15px !important;
     font-family: Calibri, Arial, sans-serif !important;
 }
 </style>

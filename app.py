@@ -214,7 +214,7 @@ st.subheader("⚙️ Department Pending Value")
 
 dept_summary =(
     filtered
-    .groupy("Department", as_index=False)
+    .groupby("Department", as_index=False)
     .agg(Pending_Value=("Value", "sum")
  )
 )

@@ -612,7 +612,6 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-import win32com.client as win32
 from datetime import datetime
 
 def send_status_mail(excel_file, mech_value, elec_value):

@@ -411,6 +411,8 @@ detail["5 Days Ageing"] = (
     detail["Due Date"] - today
 ).dt.days
 
+detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
+
 # Show Due Date without time
 detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
 

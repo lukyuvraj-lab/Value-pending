@@ -229,9 +229,6 @@ st.dataframe(
 st.markdown("---")
 st.subheader("📊 Plant & Department Summary")
 
-df = df[df["PLANT"].notna()]
-df = df[df["PLANT"].astype(str).str.strip() != ""]
-
 summary = (
     filtered
     .groupby(["Plant", "Department"])

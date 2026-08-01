@@ -400,6 +400,17 @@ detail["5 Days Ageing"] = (
     pd.to_datetime(detail["Due Date"], format="%d-%m-%Y") - today
 ).dt.days
 
+# Quarter-end override
+if grn_date.month in [3, 6, 9, 12]:
+    quarter_end = pd.Timestamp(
+        year=grn_date.year,
+        month=grn_date.month,
+        day=grn_date.days_in_month
+    )
+
+    if due_date > quarter_end:
+        due_date = quarter_end
+
 # Show GRN Date without time
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 

@@ -308,17 +308,18 @@ with col1:
     )
 
 with col1:
-    if selected_plant != "All Plants":
-        st.subheader("📊 Plant Summary")
+    st.subheader("📊 Plant Summary")
 
-        plant_summary = summary[summary["Plant"] == selected_plant]
+if selected_plant == "All Plants":
+    plant_summary = summary
+else:
+    plant_summary = summary[summary["Plant"] == selected_plant]
 
-        if not plant_summary.empty:
-            st.dataframe(
-                plant_summary,
-                use_container_width=True,
-                hide_index=True
-            )
+st.dataframe(
+    plant_summary,
+    hide_index=True,
+    use_container_width=True
+)
 
 display_df = filtered.copy()
 

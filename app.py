@@ -257,7 +257,7 @@ summary = (
 
 st.markdown("---")
 
-col1, col2 = st.columns([1.5,  1])
+col1, col2 = st.columns([1.8,  1])
 
 with col1:
     st.subheader("⚙️ Department Pending Value")

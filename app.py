@@ -335,7 +335,7 @@ filtered_detail = filtered_detail[
 ]
 
 detail["GRN DATE"] = pd.to_datetime(
-    detail["GRN DATE"],
+    detail["GRN Date"],
     errors="coerce"
 ).dt.strftime("%Y-%m-%d")
 

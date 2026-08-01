@@ -330,6 +330,11 @@ if detail_grn != "All":
 filtered = filtered[
    filtered["Plant"].fillna("").astype(str).str.strip() !=""
 ]
+detail = (filtered
+          .groupy(["Plant", "GRN", "Material"], as_index=False)
+          .agg(value=("Value", "sum")
+              )
+         )
 st.dataframe(
     filtered[["Plant", "GRN", "Material", "Value"]],
     use_container_width=True,

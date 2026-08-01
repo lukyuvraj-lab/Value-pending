@@ -392,11 +392,11 @@ detail["5 Days Ageing"] = (
 # Show GRN Date without time
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 
-# Remove .000000 from GRN NO
+# Remove .000000 from GRN
 
-detail["GRN NO"] = (
+detail["GRN"] = (
 
-    pd.to_numeric(detail["GRN NO"], errors="coerce")
+    pd.to_numeric(detail["GRN"], errors="coerce")
 
     .astype("Int64")
 

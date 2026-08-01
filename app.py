@@ -217,8 +217,7 @@ dept_summary = (
     .groupby("Department", as_index=False)["Value"]
     .sum()
 )
-from num2wrods import num2wrods
-
+from num2wrods import num2words
 dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2wrods(int(x), lang="en_IN").title()
                                                                     )
 

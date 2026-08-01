@@ -3,4 +3,4 @@ pandas
 openpyxl
 matplotlib
 num2words
-streamlit-autorefresh
+

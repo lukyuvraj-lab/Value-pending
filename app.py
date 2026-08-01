@@ -496,13 +496,26 @@ st.download_button(
 # DOWNLOAD DETAIL
 # =====================================================
 
-detail_csv = display_df.to_csv(index=False).encode("utf-8")
+# Electrical records
+st.subheader("⚡ Electrical Pending Data")
+electrical_detail = detail[detail["Department"] == "Electrical"]
 
-st.download_button(
-    label="📥 Download Detailed Data",
-    data=detail_csv,
-    file_name=f"MB52_Detail_{datetime.now().strftime('%d%m%Y')}.csv",
-    mime="text/csv"
+st.dataframe(
+    electrical_detail,
+    hide_index=True,
+    use_container_width=True
+)
+
+st.markdown("---")
+
+# Mechanical records
+st.subheader("🔧 Mechanical Pending Data")
+mechanical_detail = detail[detail["Department"] == "Mechanical"]
+
+st.dataframe(
+    mechanical_detail,
+    hide_index=True,
+    use_container_width=True
 )
 
 # =====================================================

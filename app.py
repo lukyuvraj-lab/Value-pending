@@ -357,15 +357,13 @@ if detail_grn != "All":
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-st.write("Columns:", filtered_detail.columns.tolist())
-st.stop()
+
 detail = (
     filtered_detail.groupby(
         [
             "Plant",
             "Department",
             "GRN",
-            "GRN DATE"
         ],
         as_index=False
     )

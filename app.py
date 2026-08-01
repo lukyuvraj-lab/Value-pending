@@ -298,22 +298,6 @@ with col1:
         use_container_width=True,
         height=180
     )
-# =====================================================
-# SEARCH
-# =====================================================
-
-st.markdown("___")
-st.subheader("🔍 Search")
-search = st.text_input("🔍Search GRN").strip()
-
-display_df = filtered.copy()
-
-if search:
-    display_df = display_df[
-        display_df["Material"].astype(str).str.contains(search, case=False, na=False)
-        |
-        display_df["GRN"].astype(str).str.contains(search, case=False, na=False)
-    ]
 
 # =====================================================
 # DETAILED DATA

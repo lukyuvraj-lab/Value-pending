@@ -335,7 +335,7 @@ st.write(filtered_detail.columns)
 
 detail = (
     filtered_detail
-    .groupby(["Plant", "GRN", "Material"], as_index=False)
+    .groupby(["Plant", "GRN"], as_index=False)
     .agg(
         Value=("Value", "sum")
     )

@@ -182,6 +182,10 @@ df["Plant"] = (
 # -----------------------------
 # Sidebar Filters
 # -----------------------------
+st.sidebar.markdown(
+    f"### 📅 {datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%d-%m-%Y %H:%M')}"
+)
+
 st.sidebar.header("Filters")
 
 plant_list = ["All Plants"] + sorted(

@@ -404,7 +404,7 @@ detail["GRN"] = (
 
 )
  # Remove  .00000 from value
-detail["Value"] = detail["Value"],apply(lambda x: "{:g:}.fprmat(float(x))
+detail["Value"] = detail["Value"],apply(lambda x: "{:g:}".fprmat(float(x)))
 # Highlight overdue rows
 def highlight_overdue(row):
     if row["5 Days Ageing"] < 0:

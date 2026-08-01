@@ -642,7 +642,16 @@ st.text_area(
     height=220,
 )
 
-st.download_button("📥 Download Detailed Data", ...)
+# Remove this line
+# st.download_button("📥 Download Detailed Data", ...)
+
+# Or restore your original download button
+st.download_button(
+    "📥 Download Detailed Data",
+    data=excel_data,          # your Excel bytes variable
+    file_name="Detailed_Data.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+)
 # =====================================================
 # FOOTER
 # =====================================================

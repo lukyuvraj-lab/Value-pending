@@ -349,19 +349,21 @@ detail = (
     )
 )
 
+from pandas.tseries.offsets import BDay
+
 # Convert GRN Date
 detail["GRN DATE"] = pd.to_datetime(detail["GRN DATE"], errors="coerce")
 
-# Remove time
-detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
-
-# ===== Add this here =====
+# Today
 today = pd.Timestamp.today().normalize()
 
+# 5 working day due date
+detail["Due Date"] = detail["GRN DATE"] + BDay(5)
+
+# Ageing (working days)
 detail["5 Days Ageing"] = (
-    today - pd.to_datetime(detail["GRN DATE"], format="%d-%m-%Y", errors="coerce")
+    detail["Due Date"] - today
 ).dt.days
-# =========================
 
 st.dataframe(
     detail,

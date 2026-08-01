@@ -331,7 +331,7 @@ filtered = filtered[
    filtered["Plant"].fillna("").astype(str).str.strip() !=""
 ]
 st.dataframe(
-    filtered,
+    filtered[["Plant", "GRN", "Material", "Value"]],
     use_container_width=True,
     hide_index=True
 )

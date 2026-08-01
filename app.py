@@ -331,11 +331,9 @@ filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
 
-st.write(filtered_detail.columns)
-
 detail = (
     filtered_detail
-    .groupby(["Plant", "GRN"], as_index=False)
+    .groupby(["Plant", "Department", "GRN"], as_index=False)
     .agg(
         Value=("Value", "sum")
     )

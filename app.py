@@ -349,6 +349,20 @@ detail = (
     )
 )
 
+# Convert GRN Date
+detail["GRN DATE"] = pd.to_datetime(detail["GRN DATE"], errors="coerce")
+
+# Remove time
+detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
+
+# ===== Add this here =====
+today = pd.Timestamp.today().normalize()
+
+detail["5 Days Ageing"] = (
+    today - pd.to_datetime(detail["GRN DATE"], format="%d-%m-%Y", errors="coerce")
+).dt.days
+# =========================
+
 st.dataframe(
     detail,
     use_container_width=True,

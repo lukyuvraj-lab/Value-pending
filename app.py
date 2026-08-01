@@ -32,7 +32,7 @@ st.markdown("""
 # -----------------------------
 col1, col2 = st.columns([5, 1])
 
-    st.title("📊 HQA E&M Open Recepite Dashboard")
+st.title("📊 HQA E&M Open Recepite Dashboard")
 
 # -----------------------------
 # Upload Excel

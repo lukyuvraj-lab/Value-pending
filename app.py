@@ -398,6 +398,15 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
             cell.font = header_font
 
         ws.auto_filter.ref = ws.dimensions
+        # Format numbers (remove unnecessary .00)
+for row in ws.iter_rows(min_row=2):
+    for cell in row:
+        if isinstance(cell.value, (int, float)):
+            if float(cell.value).is_integer():
+                cell.value = int(cell.value)
+                cell.number_format = "0"
+            else:
+                cell.number_format = "#,##0.00"
 
         for col in ws.columns:
             length = max(len(str(c.value)) if c.value else 0 for c in col)

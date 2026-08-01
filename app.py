@@ -318,7 +318,7 @@ else:
 st.dataframe(
     plant_summary,
     hide_index=True,
-    width=400,     # Adjust width as needed
+    width=410,     # Adjust width as needed
     height=190     # Adjust height as needed
 )
 display_df = filtered.copy()

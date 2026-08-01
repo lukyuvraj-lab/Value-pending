@@ -185,7 +185,8 @@ df["Plant"] = (
 st.sidebar.markdown(
     f"""
     <p style="font-size:14px; margin-bottom:5px;">
-    📅 {datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%d-%m-%Y')}
+    📅 {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y')}<br>
+    🕒 {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%H:%M:%S')}
     </p>
     """,
     unsafe_allow_html=True

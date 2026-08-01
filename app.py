@@ -217,8 +217,6 @@ dept_summary =(filtered
                .agg(Pending_Value=("Value", "sum")
  )
 )
-dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(....)
-
 st.dataframe(
     dept_summary[["Department", "Pending_Value", "Value in Words"]],
     hide_index=True,

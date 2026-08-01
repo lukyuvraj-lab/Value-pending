@@ -302,20 +302,15 @@ with col1:
 # SEARCH
 # =====================================================
 
-st.markdown("---")
-st.subheader("🔍 Search")
-
-search = st.text_input(
-    "Search Material / GRN"
-).strip()
+search = st.text_input("🔍 Search Material / GRN").strip()
 
 display_df = filtered.copy()
 
 if search:
     display_df = display_df[
-        display_df["Material"].str.contains(search, case=False, na=False)
+        display_df["Material"].astype(str).str.contains(search, case=False, na=False)
         |
-        display_df["GRN"].str.contains(search, case=False, na=False)
+        display_df["GRN"].astype(str).str.contains(search, case=False, na=False)
     ]
 
 # =====================================================

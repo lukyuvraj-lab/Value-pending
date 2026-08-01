@@ -212,12 +212,6 @@ kpi4.metric(
 st.markdown("---")
 st.subheader("⚙️ Department Pending Value")
 
-dept_summary = (
-    filtered
-    .groupby("Department", as_index=False)["Value"]
-    .sum()
-)
-
 dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(lambda x:num2words(int(x), lang="en_IN").title()
                                                                     )
 

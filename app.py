@@ -496,25 +496,14 @@ st.download_button(
 # DOWNLOAD DETAIL
 # =====================================================
 
-output = io.BytesIO()
-
-with pd.ExcelWriter(output, engine="openpyxl") as writer:
-
-    # Separate department data
-    electrical = detail[detail["Department"] == "Electrical"].copy()
-    mechanical = detail[detail["Department"] == "Mechanical"].copy()
-
-    # Write each department to a separate sheet
-    electrical.to_excel(writer, sheet_name="Electrical", index=False)
-    mechanical.to_excel(writer, sheet_name="Mechanical", index=False)
-
-output.seek(0)
+detail_csv = display_df.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    "📥 Download Detailed Data",
-    data=output,
-    file_name="Detailed_Pending_Data.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    label="📥 Download Detailed Data",
+    data=detail_csv,
+    file_name=f"MB52_Detail_{datetime.now().strftime('%d%m%Y')}.csv",
+    mime="text/csv"
+
 )
 
 # =====================================================

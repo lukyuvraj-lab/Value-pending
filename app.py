@@ -212,7 +212,7 @@ kpi4.metric(
 st.markdown("---")
 st.subheader("⚙️ Department Pending Value")
 
-dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply
+dept_summary["Value in Words"] = dept_summary["Pending_Value"].apply(....)
 
 st.dataframe(
     dept_summary[["Department", "Pending_Value", "Value in Words"]],

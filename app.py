@@ -378,9 +378,8 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
 ]
 
-electrical = electrical[columns_order]
-
-mechanical = mechanical[columns_order]
+    electrical = electrical[columns_order]
+    mechanical = mechanical[columns_order]
 
     electrical.to_excel(writer, sheet_name="Electrical", index=False)
     mechanical.to_excel(writer, sheet_name="Mechanical", index=False)

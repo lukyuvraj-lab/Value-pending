@@ -257,19 +257,19 @@ summary = (
 
 st.markdown("---")
 
-col1, col2 = st.columns([5,  1])
+col1, col2 = st.columns([2,  1])
 
 with col1:
     st.subheader("⚙️ Department Pending Value")
     st.dataframe(
-        dept_summary,
+        summary,
         hide_index=True,
         use_container_width=False
     )
 with col2:
     st.subheader("📊 Plant Summary")
     st.dataframe(
-        summary,
+        dept_summary,
         hide_index=True,
         use_container_width=True,
         height=180

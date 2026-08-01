@@ -685,6 +685,6 @@ HQA E&M Open Receipt Pending Dashboard
 
 Records : {len(display_df):,}
 
-Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%d-%m-%Y")}
+Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
 """
 )

@@ -502,8 +502,32 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     display_df.to_excel(writer, sheet_name="Detailed Data", index=False)
 
+    
+    from openpyxl.styles import Font
     ws = writer.sheets["Detailed Data"]
+ 
+# Find "Value in QualInsp" column
+value_col = None
+for cell in ws[1]:
+    if cell.value == "Value in QualInsp":
+        value_col = cell.column
+        break
 
+# Add TOTAL row
+if value_col:
+    last_row = ws.max_row + 1
+
+    # TOTAL text
+    total_cell = ws.cell(row=last_row, column=1)
+    total_cell.value = "TOTAL"
+    total_cell.font = Font(bold=True)
+
+    # SUM formula
+    sum_cell = ws.cell(row=last_row, column=value_col)
+    col_letter = sum_cell.column_letter
+    sum_cell.value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
+    sum_cell.font = Font(bold=True)
+    sum_cell.number_format = "#,##0.00"
     # Auto width
     for col in ws.columns:
         max_len = max(len(str(cell.value)) if cell.value is not None else 0 for cell in col)

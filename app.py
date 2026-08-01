@@ -183,7 +183,12 @@ df["Plant"] = (
 # Sidebar Filters
 # -----------------------------
 st.sidebar.markdown(
-    f"### 📅 {datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%d-%m-%Y %H:%M')}"
+    f"""
+    <p style="font-size:14px; margin-bottom:5px;">
+    📅 {datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%d-%m-%Y')}
+    </p>
+    """,
+    unsafe_allow_html=True
 )
 
 st.sidebar.header("Filters")

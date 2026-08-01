@@ -340,8 +340,7 @@ detail = (
             "Plant",
             "Department",
             "GRN NO",
-            "GRN DATE",
-            "Vendor"
+            "GRN DATE"
         ],
         as_index=False
     )

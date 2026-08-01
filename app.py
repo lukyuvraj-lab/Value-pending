@@ -397,8 +397,7 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
             cell.fill = header_fill
             cell.font = header_font
 
-                ws.auto_filter.ref = ws.dimensions
-
+        ws.auto_filter.ref = ws.dimensions
         # Indian number format
         for row in ws.iter_rows(min_row=2):
             for cell in row:

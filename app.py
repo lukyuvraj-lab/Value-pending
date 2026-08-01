@@ -257,7 +257,7 @@ summary = (
 
 st.markdown("---")
 
-col1, col2 = st.columns([3,  1])
+col1, col2 = st.columns([1.5,  1])
 
 with col1:
     st.subheader("📊 Plant Summary")
@@ -273,7 +273,7 @@ with col2:
     st.dataframe(
         dept_summary,
         hide_index=True,
-        use_container_width=True
+        use_container_width=False
     )
 # =====================================================
 # SEARCH

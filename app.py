@@ -613,8 +613,10 @@ st.download_button(
 # =====================================================
 
 # Calculate values
-mech_total = detail.loc[detail["Department"] == "Mechanical", "Value"].sum()
-elec_total = detail.loc[detail["Department"] == "Electrical", "Value"].sum()
+value_num = pd.to_numeric(detail["Value"], errors="coerce")
+
+mech_total = value_num[detail["Department"] == "Mechanical"].sum()
+elec_total = value_num[detail["Department"] == "Electrical"].sum()
 total_value = mech_total + elec_total
 
 today = pd.Timestamp.today()

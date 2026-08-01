@@ -213,7 +213,7 @@ st.markdown("---")
 st.subheader("⚙️ Department Pending Value")
 
 dept_summary =(
-    display_df
+    filtered
     .groupy("Department", as_index=False)
     .agg(Pending_Value=("Value", "sum")
  )

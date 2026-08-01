@@ -20,7 +20,7 @@ st.set_page_config(
 col1, col2 = st.columns([5, 1])
 
 with col1:
-    st.title("📊 MB52 Pending Dashboard")
+    st.title("📊 HQA E&M Open Recepite Dashboard")
 
 with col2:
     st.markdown(

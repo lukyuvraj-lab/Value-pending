@@ -375,7 +375,7 @@ detail = (
         as_index=False
     )
     .agg(
-        Value=("value", "sum")
+        value=("Value", "sum")
     )
 )
 

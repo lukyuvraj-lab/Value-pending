@@ -302,11 +302,10 @@ col1, col2 = st.columns([3, 3])
 with col1:
     st.subheader("⚙️ Department Pending Value")
     st.dataframe(
-    dept_summary,
-    hide_index=True,
-    width=200,      # Increase width
-    height=180      # Increase height
-)
+        dept_summary,
+        hide_index=True,
+        use_container_width=False
+    )
 
 with col1:
     st.subheader("📊 Plant Summary")

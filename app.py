@@ -650,7 +650,6 @@ st.text_area(
     mail_text,
     height=300,
 )
-)
 
 # Remove this line
 # st.download_button("📥 Download Detailed Data", ...)

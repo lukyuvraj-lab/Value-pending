@@ -359,7 +359,7 @@ filtered_detail = filtered_detail[
 ]
 
 detail = (
-    filtered.groupby(
+    filtered_detail.groupby(
         [
             "Plant",
             "Department",
@@ -369,7 +369,7 @@ detail = (
         as_index=False
     )
     .agg(
-        Value=("Value in QualInsp.", "sum")
+        Value=("Value", "sum")
     )
 )
 

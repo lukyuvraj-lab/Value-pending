@@ -264,7 +264,8 @@ with col1:
     st.dataframe(
         summary,
         hide_index=True,
-        use_container_width=True
+        use_container_width=True,
+        height=180
     )
 
 with col2:

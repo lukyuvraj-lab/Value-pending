@@ -409,7 +409,7 @@ detail.loc[mask, "Due Date"] = quarter_end[mask]
 # Calculate Ageing
 today = pd.Timestamp.today().normalize()
 
-detail["Closing 5 Days"] = (
+detail["Due Date"] = (
     detail["Due Date"] - today
 ).dt.days
 
@@ -434,7 +434,7 @@ detail["GRN"] = (
 detail["value"] = detail["value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 # Highlight overdue rows
 def highlight_overdue(row):
-    if row["Closing 5 Days"] < 0:
+    if row["Due Date"] < 0:
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
 

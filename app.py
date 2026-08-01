@@ -220,7 +220,8 @@ dept_summary = (
 
 st.dataframe(
     dept_summary,
-    use_container_width=True
+    use_container_width=True,
+    hide_index=True
 )
 
 # =====================================================

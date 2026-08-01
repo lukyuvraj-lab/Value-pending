@@ -627,12 +627,18 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-# Calculate totals
-Value_num = pd.to_numeric(detail["Value"], errors="coerce").fillna(0)
+# Calculate totals from Department Summary
+mech_total = dept_summary.loc[
+    dept_summary["Department"] == "Mechanical",
+    "Pending_Value"
+].sum()
 
-mech_total = Value_num[detail["Department"] == "Mechanical"].sum()
-elec_total = Value_num[detail["Department"] == "Electrical"].sum()
-total_value = mech_total + elec_total
+elec_total = dept_summary.loc[
+    dept_summary["Department"] == "Electrical",
+    "Pending_Value"
+].sum()
+
+total_value = dept_summary["Pending_Value"].sum()
 
 today = pd.Timestamp.today()
 

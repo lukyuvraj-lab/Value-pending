@@ -381,10 +381,7 @@ from pandas.tseries.offsets import BDay
 import pandas as pd
 
 # Convert GRN DATE to datetime
-detail["GRN DATE"] = pd.to_datetime(
-    detail["GRN DATE"],
-    errors="coerce"
-)
+detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 
 # Today's date
 today = pd.Timestamp.today().normalize()

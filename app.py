@@ -259,6 +259,15 @@ summary = pd.concat(
     [summary, total],
     ignore_index=True
 )
+# Show TOTAL in both columns
+
+summary.loc[summary.index[-1], "Plant"] = "TOTAL"
+
+summary.loc[summary.index[-1], "Department"] = "TOTAL"
+
+# Start index from 1
+
+summary.index = range(1, len(summary) + 1)
 
 st.dataframe(
     summary,

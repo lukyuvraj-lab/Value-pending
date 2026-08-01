@@ -317,7 +317,7 @@ st.subheader("📋 Detailed Pending Data")
 # Create detail_df FIRST
 detail_df = (
     display_df
-    .groupby(["Plant", "Department", "GRN"], as_index=False)
+    .groupby(["Plant", "Department", "GRN", "GRN DATE"], as_index=False)
     .agg(
         Value=("Value", "sum")
     )

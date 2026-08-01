@@ -352,7 +352,7 @@ output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
-    electrical = detail[detail["Department"] == "Electrical"]
+electrical = detail[detail["Department"] == "Electrical"]
 mechanical = detail[detail["Department"] == "Mechanical"]
 accept = detail[detail["Department"] == "Accept"]
 black_stock = detail[detail["Department"] == "Black Stock"]
@@ -364,6 +364,10 @@ accept.to_excel(writer, sheet_name="Accept", index=False)
 black_stock.to_excel(writer, sheet_name="Black Stock", index=False)
 unfinished.to_excel(writer, sheet_name="Unfinished Parts", index=False)
 
+wrokbook = writer.book
+
+header_fill = PatternFill(
+    start_colour
     electrical.to_excel(
         writer,
         sheet_name="Electrical",

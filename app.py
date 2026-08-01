@@ -334,6 +334,11 @@ filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
 
+detail["GRN DATE"] = pd.to_datetime(
+    detail["GRN DATE"],
+    errors="coerce"
+).dt.strftime("%Y-%m-%d")
+
 detail = (
     filtered
     .groupby(

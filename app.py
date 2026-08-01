@@ -445,7 +445,7 @@ detail.rename(columns={
 
 # Highlight overdue rows
 def highlight_overdue(row):
-    if row["Due Date"] < 0:
+    if row["Days Left"] < 0:
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
 

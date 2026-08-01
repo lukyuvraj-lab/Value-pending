@@ -627,20 +627,15 @@ st.download_button(
 # Pending Status Mail 
 # =====================================================
 
-# 1. Calculate totals
+# Calculate totals
 Value_num = pd.to_numeric(detail["Value"], errors="coerce").fillna(0)
 
-mech_total = ...
-elec_total = ...
-total_value = ...
+mech_total = Value_num[detail["Department"] == "Mechanical"].sum()
+elec_total = Value_num[detail["Department"] == "Electrical"].sum()
+total_value = mech_total + elec_total
 
-# 2. Today's date
 today = pd.Timestamp.today()
 
-# 3. Create mail text
-mail_text = f"""..."""
-
-# 4. Display mail text
 mail_text = f"""
 Dear Sir,
 
@@ -656,21 +651,21 @@ HQA Team.
 """
 
 st.subheader("📧 Mail Content")
+
 st.markdown("""
 <style>
 textarea {
-    font-size: 17px !important;
-    font-family: Calibri, Arial, sans-serif !important;
+    font-size:17px !important;
+    font-family:Calibri, Arial, sans-serif !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 st.text_area(
     "📧 Copy and paste into Outlook",
-    mail_text,
-    height=400,
+    value=mail_text,
+    height=300,
 )
-
 # Remove this line
 # st.download_button("📥 Download Detailed Data", ...)
 

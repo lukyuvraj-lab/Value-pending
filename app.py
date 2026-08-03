@@ -459,7 +459,7 @@ detail["GRN"] = (
 )
 
  # Remove  .00000 from value
-detail["value"] = detail["value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
+detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 
 detail.rename(columns={
     "Plant": "Plant",

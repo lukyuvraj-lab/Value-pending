@@ -677,10 +677,10 @@ Dear Sir,
 
 Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
 
-Mechanical Department: ₹ {mech_total:,.0f}
-Electrical Department: ₹ {elec_total:,.0f}
+Mechanical Department: ₹ {mech_total:,.2f}
+Electrical Department: ₹ {elec_total:,.2f}
 
-Total Pending Value: ₹ {total_value:,.0f}
+Total Pending Value: ₹ {total_value:,.2f}
 
 Regards,
 HQA Team.

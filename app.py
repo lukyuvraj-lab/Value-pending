@@ -369,17 +369,18 @@ with col2:
 with col3:
     detail_grn = st.selectbox(
         "📄 GRN",
-        ["All"] + sorted(
-    detail_df["GRN DATE"]
-    .dropna()
-    .dt.strftime("%d-%m-%Y")
-    .unique()
-    .tolist()
-)
+        ["All"] + sorted(detail_df["GRN"].astype(str).unique().tolist())
+    )
 with col4:
-    detail_grn_date= st.selectbox(
+    detail_grn_date = st.selectbox(
         "📅 GRN Date",
-        ["All"] + sorted(detail_df["GRN DATE"].astype(str).unique().tolist())
+        ["All"] + sorted(
+            detail_df["GRN DATE"]
+            .dropna()
+            .dt.strftime("%d-%m-%Y")
+            .unique()
+            .tolist()
+        )
     )
 
 filtered_detail = detail_df.copy()

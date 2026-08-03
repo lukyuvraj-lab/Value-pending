@@ -290,11 +290,21 @@ kpi3.metric(
 # SUMMARY TABLES
 # =====================================================
 
-# Department Summary
+# Department Pending Value
 dept_summary = (
     filtered
     .groupby("Department", as_index=False)
     .agg(Pending_Value=("Value", "sum"))
+)
+
+# Department GRN & Lot Count
+dept_count = (
+    filtered
+    .groupby("Department", as_index=False)
+    .agg(
+        GRN_Count=("GRN", "nunique"),
+        Lot_Count=("GRN", "count")
+    )
 )
 
 # Plant Summary
@@ -313,18 +323,25 @@ summary = (
 
 st.markdown("---")
 
-col1, col2 = st.columns([3, 3])
+col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("⚙️ Department Pending Value")
     st.dataframe(
         dept_summary,
         hide_index=True,
-        use_container_width=False
+        use_container_width=True
     )
 
-with col1:
-    st.subheader("📊 Plant Summary")
+with col2:
+    st.subheader("📄 Department GRN & Lot Count")
+    st.dataframe(
+        dept_count,
+        hide_index=True,
+        use_container_width=True
+    )
+
+st.subheader("📊 Plant Summary")
 
 if selected_plant == "All Plants":
     plant_summary = summary
@@ -339,6 +356,8 @@ st.dataframe(
     width=430,
     height=table_height
 )
+
+display_df = filtered.copy()
 display_df = filtered.copy()
 
 # =====================================================

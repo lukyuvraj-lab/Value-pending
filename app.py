@@ -341,6 +341,9 @@ st.dataframe(
 )
 display_df = filtered.copy()
 
+st.write("GRN Count Check")
+st.write(filtered["GRN"].value_counts().head(20))
+
 # =====================================================
 # DETAILED DATA
 # =====================================================

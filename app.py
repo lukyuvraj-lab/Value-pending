@@ -61,8 +61,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Logo
-st.image("tasl_logo.png", width=280)
+
 
 # -----------------------------
 # Title
@@ -77,6 +76,9 @@ uploaded_file = st.file_uploader(
     "📂 Upload MB52 Excel File",
     type=["xlsx", "xls"]
 )
+
+# Logo
+st.image("tasl_logo.png", width=280)
 
 if uploaded_file is None:
     st.info("Please upload an MB52 Excel file.")

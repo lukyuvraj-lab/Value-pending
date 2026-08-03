@@ -406,19 +406,17 @@ if detail_grn_date != "All":
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
+filtered_detail["Lot Pending"] = (
+    filtered_detail.groupby("GRN")["GRN"]
+    .transform("count")
+)
 
 detail = (
     filtered_detail.groupby(
-        [
-            "Plant",
-            "Department",
-            "GRN",
-            "GRN DATE",
-        ],
+        ["Plant", "Department", "GRN", "GRN DATE"],
         as_index=False
-    )
-    .agg(
-        Lot_Pending=("GRN", "count"),   # Count lots (rows) for each GRN
+    ).agg(
+        Lot_Pending=("Lot Pending", "max"),
         Value=("Value", "sum")
     )
 )

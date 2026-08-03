@@ -61,6 +61,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Logo
+st.image("tasl_logo.png", width=280)
+
 # -----------------------------
 # Title
 # -----------------------------

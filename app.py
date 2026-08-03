@@ -407,7 +407,7 @@ if detail_grn != "All":
     ]
 if detail_grn_date != "All":
     filtered_detail = filtered_detail[
-        filtered_detail["GRN DATE"].astype(str) == detail_grn_date
+        filtered_detail["GRN DATE"].dt.strftime("%d-%m-%Y") == detail_grn_date
     ]
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""

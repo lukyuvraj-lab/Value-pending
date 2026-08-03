@@ -351,10 +351,8 @@ st.subheader("📋 Detailed Pending Data")
 # Create detail_df FIRST
 detail_df = (
     display_df
-    .groupby(["Plant", "Department", "GRN", "GRN DATE"], as_index=False)
-    .agg(
-        Value=("Value", "sum")
-    )
+    .groupby(...)
+    .agg(Value=("Value","sum"))
 )
 
 # Filters
@@ -407,8 +405,7 @@ filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
 filtered_detail["Lot Pending"] = (
-    filtered_detail.groupby("GRN")["GRN"]
-    .transform("count")
+    filtered_detail.groupby("GRN")["GRN"].transform("size")
 )
 
 detail = (

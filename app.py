@@ -379,8 +379,12 @@ with col4:
 
 filtered_detail = detail_df.copy()
 
-st.write("Total Rows:", len(filtered_detail))
-st.write(filtered_detail["GRN"].value_counts().head(20))
+st.write(
+    filtered_detail.groupby("GRN")
+    .size()
+    .sort_values(ascending=False)
+    .head(20)
+)
 
 if detail_plant != "All":
     filtered_detail = filtered_detail[

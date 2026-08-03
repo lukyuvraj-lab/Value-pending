@@ -379,6 +379,9 @@ with col4:
 
 filtered_detail = detail_df.copy()
 
+st.write("Total Rows:", len(filtered_detail))
+st.write(filtered_detail["GRN"].value_counts().head(20))
+
 if detail_plant != "All":
     filtered_detail = filtered_detail[
         filtered_detail["Plant"] == detail_plant

@@ -367,9 +367,10 @@ with col2:
     )
 
 with col3:
-    detail_grn = st.selectbox(
-        "📄 GRN",
-        ["All"] + sorted(detail_df["GRN"].astype(str).unique().tolist())
+    detail_grn = st.multiselect(
+        "📄 Search GRN",
+        options=sorted(detail_df["GRN"].astype(str).unique().tolist()),
+        placeholder="Type or select one or more GRNs..."
     )
 with col4:
     detail_grn_date = st.selectbox(
@@ -396,9 +397,9 @@ if detail_department != "All":
         filtered_detail["Department"] == detail_department
     ]
 
-if detail_grn != "All":
+if detail_grn:
     filtered_detail = filtered_detail[
-        filtered_detail["GRN"].astype(str) == detail_grn
+        filtered_detail["GRN"].astype(str).isin(detail_grn)
     ]
 if detail_grn_date != "All":
     filtered_detail = filtered_detail[

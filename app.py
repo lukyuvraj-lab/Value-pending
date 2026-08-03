@@ -402,7 +402,8 @@ detail = (
         as_index=False
     )
     .agg(
-        value=("Value", "sum")
+        Lot_Pending=("GRN", "count"),   # Count lots (rows) for each GRN
+        Value=("Value", "sum")
     )
 )
 

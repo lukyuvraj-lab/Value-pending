@@ -7,8 +7,23 @@ from zoneinfo import ZoneInfo
 import io
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
-from babel.numbers import format_currency
+def indian_currency(amount):
+    amount = float(amount)
+    s = f"{amount:.2f}"
+    integer, decimal = s.split(".")
 
+    if len(integer) > 3:
+        last3 = integer[-3:]
+        rest = integer[:-3]
+        parts = []
+        while len(rest) > 2:
+            parts.insert(0, rest[-2:])
+            rest = rest[:-2]
+        if rest:
+            parts.insert(0, rest)
+        integer = ",".join(parts) + "," + last3
+
+    return f"₹ {integer}.{decimal}"
 st.set_page_config(
     page_title="HQA E&M Open Receipt",
     layout="wide",
@@ -678,10 +693,10 @@ Dear Sir,
 
 Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
 
-Mechanical Department: {format_currency(mech_total, 'INR', locale='en_IN')}
-Electrical Department: {format_currency(elec_total, 'INR', locale='en_IN')}
+Mechanical Department: {indian_currency(mech_total)}
+Electrical Department: {indian_currency(elec_total)}
 
-Total Pending Value: {format_currency(total_value, 'INR', locale='en_IN')}
+Total Pending Value: {indian_currency(total_value)}
 
 Regards,
 HQA Team.

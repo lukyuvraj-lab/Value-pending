@@ -77,12 +77,13 @@ uploaded_file = st.file_uploader(
     type=["xlsx", "xls"]
 )
 
-# Logo
-st.image("tasl_logo.png", width=280)
 
 if uploaded_file is None:
     st.info("Please upload an MB52 Excel file.")
     st.stop()
+
+# Logo
+st.image("tasl_logo.png", width=300)
 
 # -----------------------------
 # Read Excel

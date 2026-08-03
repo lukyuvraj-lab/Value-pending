@@ -349,11 +349,7 @@ st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
 # Create detail_df FIRST
-detail_df = (
-    display_df
-    .groupby(...)
-    .agg(Value=("Value","sum"))
-)
+detail_df = display_df.copy()
 
 # Filters
 col1, col2, col3, col4= st.columns(4)

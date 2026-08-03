@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import io
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
+from babel.numbers import format_currency
 
 st.set_page_config(
     page_title="HQA E&M Open Receipt",
@@ -677,10 +678,10 @@ Dear Sir,
 
 Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
 
-Mechanical Department: ₹ {mech_total:,.2f}
-Electrical Department: ₹ {elec_total:,.2f}
+Mechanical Department: {format_currency(mech_total, 'INR', locale='en_IN')}
+Electrical Department: {format_currency(elec_total, 'INR', locale='en_IN')}
 
-Total Pending Value: ₹ {total_value:,.2f}
+Total Pending Value: {format_currency(total_value, 'INR', locale='en_IN')}
 
 Regards,
 HQA Team.

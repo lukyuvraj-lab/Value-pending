@@ -549,12 +549,12 @@ selected_grn = st.selectbox(
 grn_details = filtered[
     filtered["GRN"].astype(str) == selected_grn
 ][[
-    "Plant"
+    "Plant",
     "GRN",
     "GRN DATE",
     "Material",
-    "Material Description"
-    "Quality Inspection"
+    "Material Description",
+    "Quality Inspection",
     "Value"
 ]]
 

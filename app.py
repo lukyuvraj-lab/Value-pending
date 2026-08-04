@@ -1,29 +1,10 @@
 import streamlit as st
 import pandas as pd
-import streamlit as st
-import time   # 👈 Add this
 from datetime import datetime
-from zoneinfo import ZoneInfo
 import io
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
-def indian_currency(amount):
-    amount = float(amount)
-    s = f"{amount:.2f}"
-    integer, decimal = s.split(".")
 
-    if len(integer) > 3:
-        last3 = integer[-3:]
-        rest = integer[:-3]
-        parts = []
-        while len(rest) > 2:
-            parts.insert(0, rest[-2:])
-            rest = rest[:-2]
-        if rest:
-            parts.insert(0, rest)
-        integer = ",".join(parts) + "," + last3
-
-    return f"₹ {integer}.{decimal}"
 st.set_page_config(
     page_title="HQA E&M Open Receipt",
     layout="wide",
@@ -61,15 +42,18 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# Logo
-st.image("tasl_logo.png", width=300)
-
 # -----------------------------
 # Title
 # -----------------------------
+col1, col2 = st.columns([5, 1])
 
-st.title("📊 HQA E&M Open Recepite Dashboard")
+with col1:
+    st.title("📊 HQA E&M Open Recepite Dashboard")
+with col2:
+    st.markdown(
+        f"<span style='font-size:16px;'>📅 {datetime.now().strftime('%d-%m-%Y')}</span>",
+        unsafe_allow_html=True
+    )
 
 # -----------------------------
 # Upload Excel
@@ -79,24 +63,15 @@ uploaded_file = st.file_uploader(
     type=["xlsx", "xls"]
 )
 
-
 if uploaded_file is None:
     st.info("Please upload an MB52 Excel file.")
     st.stop()
 
-
 # -----------------------------
 # Read Excel
 # -----------------------------
-@st.cache_data
-def load_excel(uploaded_file):
-    return pd.read_excel(uploaded_file)
-
-start = time.perf_counter()
-
 try:
-    df = load_excel(uploaded_file)
-    st.write("Read Excel:", round(time.perf_counter() - start, 2), "sec")
+    df = pd.read_excel(uploaded_file)
 except Exception as e:
     st.error(f"Unable to read Excel file.\n\n{e}")
     st.stop()
@@ -106,123 +81,55 @@ if df.empty:
     st.stop()
 
 # -----------------------------
-# Detect Columns Automatically
+# Required Column Positions
 # -----------------------------
+MATERIAL = 0
+PLANT = 2
+GRN = 8
+VALUE = 19
 
-# Clean column names
-df.columns = (
-    df.columns.astype(str)
-    .str.strip()
-    .str.upper()
-)
-
-# Find matching column
-def find_column(names):
-    for col in df.columns:
-        for name in names:
-            if name.upper() in col:
-                return col
-    return None
-
-MATERIAL_COL = find_column([
-    "MATERIAL",
-    "MATERIAL CODE"
-])
-
-PLANT_COL = find_column([
-    "PLANT"
-])
-
-GRN_COL = find_column([
-    "GRN",
-    "MATERIAL DOCUMENT",
-    "DOCUMENT"
-])
-
-GRN_DATE_COL = find_column([
-    "GRN DATE",
-    "POSTING DATE",
-    "DOCUMENT DATE"
-])
-
-VALUE_COL = find_column([
-    "VALUE IN QUALINSP.",
-    "VALUE IN QUAL INSP.",
-    "PENDING VALUE",
-    "VALUE"
-])
-
-missing = []
-
-if MATERIAL_COL is None:
-    missing.append("Material")
-
-if PLANT_COL is None:
-    missing.append("Plant")
-
-if GRN_COL is None:
-    missing.append("GRN")
-
-if GRN_DATE_COL is None:
-    missing.append("GRN Date")
-
-if VALUE_COL is None:
-    missing.append("Value")
-
-if missing:
+# Validate column count
+if len(df.columns) <= VALUE:
     st.error(
-        "Missing required columns:\n\n" +
-        ", ".join(missing)
+        "Excel format is incorrect.\n"
+        "Pending Value column (T) not found."
     )
     st.stop()
 
 # -----------------------------
 # Prepare Data
 # -----------------------------
-
 df["Material"] = (
-    df[MATERIAL_COL]
+  df.iloc[:, MATERIAL]
     .astype(str)
     .str.replace(".0", "", regex=False)
     .str.strip()
 )
 
 df["Plant"] = (
-    df[PLANT_COL]
+    df.iloc[:, PLANT]
     .fillna("")
-    .astype(str)
-    .str.split(".")
-    .str[0]
+    .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
 df["GRN"] = (
-    df[GRN_COL]
+    df.iloc[:, GRN]
     .fillna("")
-    .astype(str)
-    .str.split(".")
-    .str[0]
+    .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
-df["GRN DATE"] = pd.to_datetime(
-    df[GRN_DATE_COL],
-    errors="coerce"
-)
-
 df["Value"] = pd.to_numeric(
-    df[VALUE_COL],
+    df.iloc[:, VALUE],
     errors="coerce"
 ).fillna(0)
 
 # -----------------------------
 # Load Electrical Material Master
 # -----------------------------
-@st.cache_data
-def load_master():
-    return pd.read_excel("material_master.xlsx", header=None)
+master = pd.read_excel("material_master.xlsx", header=None)
 
-master = load_master()
 electrical_items = set(
     master[0]
     .fillna(0)
@@ -239,33 +146,28 @@ df["Department"] = df["Material"].apply(
 # -----------------------------
 # Department Logic
 # -----------------------------
+def get_department(material):
 
+    material = str(material)
 
-# Convert Plant codes to names
-plant_map = {
-    "1201": "Ecity",
-    "1202": "Vemgal"
-}
+    if (
+        material.startswith("1000")
+        or material.startswith("385")
+        or material.startswith("44")
+        or material.startswith("45")
+        or material.startswith("46")
+        or material.startswith("485")
+        or material.startswith("63")
+    ):
+        return "Electrical"
 
-df["Plant"] = (
-    df["Plant"]
-      .astype(str)
-      .str.strip()
-      .map(plant_map)
-      .fillna(df["Plant"].astype(str))
-)
+    return "Mechanical"
+
+df["Department"] = df["Material"].apply(get_department)
 
 # -----------------------------
 # Sidebar Filters
 # -----------------------------
-st.sidebar.markdown(
-    f"""
-    <p style="font-size:14px; margin-bottom:5px;">
-    📅 {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y')}<br>
-    """,
-    unsafe_allow_html=True
-)
-
 st.sidebar.header("Filters")
 
 plant_list = ["All Plants"] + sorted(
@@ -287,10 +189,6 @@ selected_department = st.sidebar.selectbox(
     "⚙️ Department",
     dept_list
 )
-#Tasl Logo
-st.sidebar.markdown("---")
-
-st.sidebar.image("./tasl_logo.png", width=300)
 
 # -----------------------------
 # Apply Filters
@@ -313,11 +211,12 @@ if selected_department != "All":
 st.markdown("---")
 st.subheader("📌 Dashboard")
 
-kpi1, kpi2, kpi3 = st.columns(3)
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 total_value = filtered["Value"].sum()
 grn_count = filtered["GRN"].nunique()
 lot_count = len(filtered)
+plant_count = filtered["Plant"].nunique() - 1
 
 kpi1.metric(
     "💰 Pending Value",
@@ -334,25 +233,19 @@ kpi3.metric(
     lot_count
 )
 
+kpi4.metric(
+    "🏭 Plants",
+    plant_count)
+
 # =====================================================
 # SUMMARY TABLES
 # =====================================================
 
-# Department Pending Value
+# Department Summary
 dept_summary = (
     filtered
     .groupby("Department", as_index=False)
     .agg(Pending_Value=("Value", "sum"))
-)
-
-# Department GRN & Lot Count
-dept_count = (
-    filtered
-    .groupby("Department", as_index=False)
-    .agg(
-        GRN_Count=("GRN", "nunique"),
-        Lot_Count=("GRN", "count")
-    )
 )
 
 # Plant Summary
@@ -371,42 +264,42 @@ summary = (
 
 st.markdown("---")
 
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([3, 3])
 
 with col1:
     st.subheader("⚙️ Department Pending Value")
     st.dataframe(
         dept_summary,
         hide_index=True,
-        use_container_width=True
+        use_container_width=False
     )
-
-with col2:
-    st.subheader("📄 Department GRN & Lot Count")
+with col1:
+    st.subheader("📊 Plant Summary")
     st.dataframe(
-        dept_count,
+        summary,
         hide_index=True,
-        use_container_width=True
+        use_container_width=True,
+        height=180
     )
+# =====================================================
+# SEARCH
+# =====================================================
 
-st.subheader("📊 Plant Summary")
+st.markdown("---")
+st.subheader("🔍 Search")
 
-if selected_plant == "All Plants":
-    plant_summary = summary
-else:
-    plant_summary = summary[summary["Plant"] == selected_plant]
-
-table_height = 35 * (len(plant_summary) + 1) + 5
-
-st.dataframe(
-    plant_summary,
-    hide_index=True,
-    width=430,
-    height=table_height
-)
+search = st.text_input(
+    "Search Material / GRN"
+).strip()
 
 display_df = filtered.copy()
-display_df = filtered.copy()
+
+if search:
+    display_df = display_df[
+        display_df["Material"].str.contains(search, case=False, na=False)
+        |
+        display_df["GRN"].str.contains(search, case=False, na=False)
+    ]
 
 # =====================================================
 # DETAILED DATA
@@ -416,10 +309,16 @@ st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
 # Create detail_df FIRST
-detail_df = display_df.copy()
+detail_df = (
+    display_df
+    .groupby(["Plant", "Department", "GRN"], as_index=False)
+    .agg(
+        Value=("Value", "sum")
+    )
+)
 
 # Filters
-col1, col2, col3, col4= st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     detail_plant = st.selectbox(
@@ -434,25 +333,12 @@ with col2:
     )
 
 with col3:
-    detail_grn = st.multiselect(
-        "📄 Search GRN",
-        options=sorted(detail_df["GRN"].astype(str).unique().tolist()),
-        placeholder="Type or select one or more GRNs..."
-    )
-with col4:
-    detail_grn_date = st.selectbox(
-        "📅 GRN Date",
-        ["All"] + sorted(
-            detail_df["GRN DATE"]
-            .dropna()
-            .dt.strftime("%d-%m-%Y")
-            .unique()
-            .tolist()
-        )
+    detail_grn = st.selectbox(
+        "📄 GRN",
+        ["All"] + sorted(detail_df["GRN"].astype(str).unique().tolist())
     )
 
 filtered_detail = detail_df.copy()
-
 
 if detail_plant != "All":
     filtered_detail = filtered_detail[
@@ -464,28 +350,26 @@ if detail_department != "All":
         filtered_detail["Department"] == detail_department
     ]
 
-if detail_grn:
+if detail_grn != "All":
     filtered_detail = filtered_detail[
-        filtered_detail["GRN"].astype(str).isin(detail_grn)
-    ]
-if detail_grn_date != "All":
-    filtered_detail = filtered_detail[
-        filtered_detail["GRN DATE"].dt.strftime("%d-%m-%Y") == detail_grn_date
+        filtered_detail["GRN"].astype(str) == detail_grn
     ]
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
-filtered_detail["Lot Pending"] = (
-    filtered_detail.groupby("GRN")["GRN"].transform("size")
-)
 
 detail = (
-    filtered_detail.groupby(
-        ["Plant", "Department", "GRN", "GRN DATE"],
+    filtered.groupby(
+        [
+            "Plant",
+            "Department",
+            "GRN",
+            "GRN DATE"
+        ],
         as_index=False
-    ).agg(
-        Lot_Pending=("Lot Pending", "max"),
-        Value=("Value", "sum")
+    )
+    .agg(
+        Value=("Value in QualInsp.", "sum")
     )
 )
 
@@ -497,36 +381,23 @@ detail["GRN DATE"] = pd.to_datetime(
     detail["GRN DATE"],
     errors="coerce"
 )
+
 # Today's date
-today = pd.Timestamp(datetime.now(ZoneInfo("Asia/Kolkata")).date())
-
-# Calculate 5 working day due date (Saturday & Sunday excluded)
-detail["Due Date"] = detail["GRN DATE"] + BDay(5)
-
-# Calculate 5 working day due date (Saturday & Sunday excluded)
-detail["Due Date"] = detail["GRN DATE"] + BDay(5)
-
-# Quarter-end override
-quarter_end = detail["GRN DATE"] + pd.offsets.QuarterEnd(0)
-
-mask = (
-    detail["GRN DATE"].dt.month.isin([3, 6, 9, 12]) &
-    (detail["Due Date"] > quarter_end)
-)
-
-detail.loc[mask, "Due Date"] = quarter_end[mask]
-
-# Calculate Ageing
 today = pd.Timestamp.today().normalize()
 
-detail["Closing 5 Days"] = (
-    detail["Due Date"] - today
-).dt.days
-
-detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
+# Calculate 5 working day due date (Saturday & Sunday excluded)
+detail["Due Date"] = detail["GRN DATE"] + BDay(5)
 
 # Show Due Date without time
-detail["Due day"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+detail["Due Date"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+
+# Calculate Ageing
+detail["5 Days Ageing"] = (
+    pd.to_datetime(detail["Due Date"], format="%d-%m-%Y") - today
+).dt.days
+
+# Show GRN Date without time
+detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
 
 # Remove .000000 from GRN
 
@@ -539,40 +410,20 @@ detail["GRN"] = (
     .astype(str)
 
 )
-
  # Remove  .00000 from value
 detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
-
-detail.rename(columns={
-    "Plant": "Plant",
-    "Department": "Department",
-    "GRN": "GRN",
-    "GRN DATE": "GRN Date",
-    "Due Date": "Closing Date",
-    "Closing 5 Days": "Days Left",
-    "Value": "Pending Value (₹)"
-}, inplace=True)
-
 # Highlight overdue rows
 def highlight_overdue(row):
-    if row["Days Left"] < 0:
+    if row["5 Days Ageing"] < 0:
         return ["background-color: #ffcccc"] * len(row)
     return [""] * len(row)
-    
-# Rename column
-detail.rename(columns={"value": "Value"}, inplace=True)
 
-# Remove Closing Date column
-detail_display = detail.drop(columns=["Closing Date"], errors="ignore")
-
-st.write("Before table:", round(time.perf_counter() - start, 2), "sec")
-
+# Display table
 st.dataframe(
-    detail_display.style.apply(highlight_overdue, axis=1),
+    detail.style.apply(highlight_overdue, axis=1),
     use_container_width=True,
     hide_index=True
 )
-#Excel Download
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -733,57 +584,6 @@ st.download_button(
     file_name=f"HQA_EM_Open_Receipt_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-
-
-# =====================================================
-# Pending Status Mail 
-# =====================================================
-
-# Calculate totals from Department Summary
-mech_total = dept_summary.loc[
-    dept_summary["Department"] == "Mechanical",
-    "Pending_Value"
-].sum()
-
-elec_total = dept_summary.loc[
-    dept_summary["Department"] == "Electrical",
-    "Pending_Value"
-].sum()
-
-total_value = dept_summary["Pending_Value"].sum()
-
-today = pd.Timestamp.today()
-
-mail_text = f"""
-Dear Sir,
-
-Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
-
-Mechanical Department: {indian_currency(mech_total)}
-Electrical Department: {indian_currency(elec_total)}
-
-Total Pending Value: {indian_currency(total_value)}
-
-Regards,
-HQA Team.
-"""
-
-st.subheader("📧 Mail Content")
-
-st.markdown("""
-<style>
-textarea {
-    font-size:17px !important;
-    font-family:Calibri, Arial, sans-serif !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.text_area(
-    "📧 Copy and paste into Outlook",
-    value=mail_text,
-    height=350,
-)
 # =====================================================
 # FOOTER
 # =====================================================
@@ -796,6 +596,6 @@ HQA E&M Open Receipt Pending Dashboard
 
 Records : {len(display_df):,}
 
-Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
+Generated : {datetime.now().strftime('%d-%m-%Y %H:%M')}
 """
 )

@@ -109,7 +109,9 @@ if df.empty:
 # Required Column Positions
 # -----------------------------
 MATERIAL = 0
+MATERIAL_DESC = 1
 PLANT = 2
+QTY = 15
 GRN = 8
 GRN_DATE = 9
 VALUE = 19
@@ -156,6 +158,17 @@ df["Value"] = pd.to_numeric(
     errors="coerce"
 ).fillna(0)
 
+df["Material Description"] = (
+    df.iloc[:, MATERIAL_DESC]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+df["Qty"] = pd.to_numeric(
+    df.iloc[:, QTY],
+    errors="coerce"
+).fillna(0)
 # -----------------------------
 # Load Electrical Material Master
 # -----------------------------
@@ -439,9 +452,17 @@ filtered_detail["Lot Pending"] = (
 
 detail = (
     filtered_detail.groupby(
-        ["Plant", "Department", "GRN", "GRN DATE"],
+        [
+            "Plant",
+            "Department",
+            "GRN",
+            "GRN DATE",
+            "Material",
+            "Material Description"
+        ],
         as_index=False
     ).agg(
+        Qty=("Qty", "sum"),
         Lot_Pending=("Lot Pending", "max"),
         Value=("Value", "sum")
     )

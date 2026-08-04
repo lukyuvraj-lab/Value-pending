@@ -106,53 +106,112 @@ if df.empty:
     st.stop()
 
 # -----------------------------
-# Required Column Positions
+# Detect Columns Automatically
 # -----------------------------
-MATERIAL = 0
-PLANT = 2
-GRN = 8
-GRN_DATE = 9
-VALUE = 19
 
-# Validate column count
-if len(df.columns) <= VALUE:
+# Clean column names
+df.columns = (
+    df.columns.astype(str)
+    .str.strip()
+    .str.upper()
+)
+
+# Find matching column
+def find_column(names):
+    for col in df.columns:
+        for name in names:
+            if name.upper() in col:
+                return col
+    return None
+
+MATERIAL_COL = find_column([
+    "MATERIAL",
+    "MATERIAL CODE"
+])
+
+PLANT_COL = find_column([
+    "PLANT"
+])
+
+GRN_COL = find_column([
+    "GRN",
+    "MATERIAL DOCUMENT",
+    "DOCUMENT"
+])
+
+GRN_DATE_COL = find_column([
+    "GRN DATE",
+    "POSTING DATE",
+    "DOCUMENT DATE"
+])
+
+VALUE_COL = find_column([
+    "VALUE IN QUALINSP.",
+    "VALUE IN QUAL INSP.",
+    "PENDING VALUE",
+    "VALUE"
+])
+
+missing = []
+
+if MATERIAL_COL is None:
+    missing.append("Material")
+
+if PLANT_COL is None:
+    missing.append("Plant")
+
+if GRN_COL is None:
+    missing.append("GRN")
+
+if GRN_DATE_COL is None:
+    missing.append("GRN Date")
+
+if VALUE_COL is None:
+    missing.append("Value")
+
+if missing:
     st.error(
-        "Excel format is incorrect.\n"
-        "Pending Value column (T) not found."
+        "Missing required columns:\n\n" +
+        ", ".join(missing)
     )
     st.stop()
 
 # -----------------------------
 # Prepare Data
 # -----------------------------
+
 df["Material"] = (
-  df.iloc[:, MATERIAL]
+    df[MATERIAL_COL]
     .astype(str)
     .str.replace(".0", "", regex=False)
     .str.strip()
 )
 
 df["Plant"] = (
-    df.iloc[:, PLANT]
+    df[PLANT_COL]
     .fillna("")
-    .apply(lambda x: str(x).split(".")[0])
+    .astype(str)
+    .str.split(".")
+    .str[0]
     .str.strip()
 )
 
 df["GRN"] = (
-    df.iloc[:, GRN]
+    df[GRN_COL]
     .fillna("")
-    .apply(lambda x: str(x).split(".")[0])
+    .astype(str)
+    .str.split(".")
+    .str[0]
     .str.strip()
 )
 
 df["GRN DATE"] = pd.to_datetime(
-    df.iloc[:, GRN_DATE],
+    df[GRN_DATE_COL],
     errors="coerce"
 )
 
 df["Value"] = pd.to_numeric(
-    df.iloc[:, VALUE],
+    df[VALUE_COL],
     errors="coerce"
 ).fillna(0)
 

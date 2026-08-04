@@ -550,11 +550,12 @@ grn_details = filtered[
     filtered["GRN"].astype(str) == selected_grn
 ][[
     "Plant",
+    "Department",
     "GRN",
-    "GRN DATE",
     "Material",
     "Material Description",
     "Quality Inspection",
+    "Lot_Pending",
     "Value"
 ]]
 

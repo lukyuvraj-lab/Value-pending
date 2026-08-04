@@ -555,7 +555,6 @@ grn_details = filtered[
     "Material",
     "Material Description",
     "Quality Inspection",
-    "Lot_Pending",
     "Value"
 ]]
 

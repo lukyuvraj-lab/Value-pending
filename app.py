@@ -498,7 +498,10 @@ detail["GRN"] = (
 
 )
 
- # Remove  .00000 from value
+# =====================================================
+# Remove  .00000 from value
+# =====================================================
+
 detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 
 detail.rename(columns={
@@ -530,6 +533,10 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+
+# =====================================================
+# GRN Details
+# =====================================================
 
 st.markdown("---")
 st.subheader("🔍 GRN Details")

@@ -530,6 +530,24 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+
+st.markdown("---")
+st.subheader("🔍 GRN Details")
+
+selected_grn = st.selectbox(
+    "Select GRN",
+    sorted(filtered["GRN"].astype(str).unique())
+)
+
+grn_details = filtered[
+    filtered["GRN"].astype(str) == selected_grn
+]
+
+st.dataframe(
+    grn_details,
+    use_container_width=True,
+    hide_index=True
+)
 #Excel Download
 output = io.BytesIO()
 

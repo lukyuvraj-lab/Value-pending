@@ -541,7 +541,12 @@ selected_grn = st.selectbox(
 
 grn_details = filtered[
     filtered["GRN"].astype(str) == selected_grn
-]
+][[
+    "Material",
+    "GRN",
+    "GRN DATE",
+    "Value"
+]]
 
 st.dataframe(
     grn_details,

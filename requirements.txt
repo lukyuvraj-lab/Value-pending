@@ -3,4 +3,6 @@ pandas
 openpyxl
 matplotlib
 num2words
+streamlit>=1.35.0
+starlette>=0.37.2
 

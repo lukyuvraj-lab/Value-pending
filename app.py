@@ -194,10 +194,8 @@ electrical_items = set(
 
 material = "604300000849"
 
-if material in electrical_items:
-    st.success("Material found in Master")
-else:
-    st.error("Material NOT found in Master")
+st.write("In master:", material in electrical_items)
+st.write("In df:", material in df["Material"].values)
 
 df["Department"] = df["Material"].apply(
     lambda x: "Electrical"

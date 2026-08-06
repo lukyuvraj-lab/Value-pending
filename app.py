@@ -192,7 +192,7 @@ electrical_items = set(
     .str.strip()
 )
 
-material = "6014000000951"
+material = "604300000849"
 
 if material in electrical_items:
     st.success("Material found in Master")

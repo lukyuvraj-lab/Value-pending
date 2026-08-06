@@ -180,6 +180,7 @@ df["Qty"] = pd.to_numeric(
 # -----------------------------
 # Load Electrical Material Master
 # -----------------------------
+st.write(master.head())
 @st.cache_data
 def load_master():
     return pd.read_excel("material_master.xlsx", header=None)

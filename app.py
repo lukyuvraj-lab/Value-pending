@@ -208,7 +208,9 @@ df["Department"] = df["Material"].astype(str).str.strip().apply(
 # Department Logic
 # -----------------------------
 
-st.write(df([df["Material"] == "604300000849"][["Material","Department"]])
+st.write(
+    df[df["Material"] == "604300000849"][["Material", "Department"]]
+)
 
 df["Department"] = df["Material"].apply(get_department)
 

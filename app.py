@@ -197,10 +197,8 @@ material = "604300000849"
 st.write("In master:", material in electrical_items)
 st.write("In df:", material in df["Material"].values)
 
-df["Department"] = df["Material"].apply(
-    lambda x: "Electrical"
-    if str(x).strip() in electrical_items
-    else "Mechanical"
+df["Department"] = df["Material"].astype(str).str.strip().apply(
+    lambda x: "Electrical" if x in electrical_items else "Mechanical"
 )
 
 # -----------------------------

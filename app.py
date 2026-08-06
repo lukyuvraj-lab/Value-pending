@@ -192,6 +192,13 @@ electrical_items = set(
     .str.strip()
 )
 
+material = "460000000303"
+
+if material in electrical_items:
+    st.success("Material found in Master")
+else:
+    st.error("Material NOT found in Master")
+
 df["Department"] = df["Material"].apply(
     lambda x: "Electrical"
     if str(x).strip() in electrical_items

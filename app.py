@@ -192,7 +192,7 @@ electrical_items = set(
     .str.strip()
 )
 
-test_material = "604300000849"
+test_material = "604300001000"
 
 st.write("In master:", test_material in electrical_items)
 

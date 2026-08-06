@@ -116,13 +116,21 @@ GRN = 8
 GRN_DATE = 9
 VALUE = 19
 
-# Validate column count
-if len(df.columns) <= VALUE:
+VALUE_COL = "Value in QualInsp."
+
+# Validate column exists
+if VALUE_COL not in df.columns:
     st.error(
-        "Excel format is incorrect.\n"
-        "Pending Value column (T) not found."
+        f"Excel format is incorrect.\n'{VALUE_COL}' column not found."
     )
+    st.write("Available columns:", df.columns.tolist())
     st.stop()
+
+# Read value column
+df["Value"] = pd.to_numeric(
+    df[VALUE_COL],
+    errors="coerce"
+).fillna(0)
 
 # -----------------------------
 # Prepare Data

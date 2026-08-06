@@ -207,22 +207,7 @@ df["Department"] = df["Material"].astype(str).str.strip().apply(
 # -----------------------------
 # Department Logic
 # -----------------------------
-def get_department(material):
 
-    material = str(material)
-
-    if (
-        material.startswith("1000")
-        or material.startswith("385")
-        or material.startswith("44")
-        or material.startswith("45")
-        or material.startswith("46")
-        or material.startswith("485")
-        or material.startswith("63")
-    ):
-        return "Electrical"
-
-    return "Mechanical"
 
 df["Department"] = df["Material"].apply(get_department)
 

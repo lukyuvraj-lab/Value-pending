@@ -212,7 +212,6 @@ st.write(
     df[df["Material"] == "604300000849"][["Material", "Department"]]
 )
 
-df["Department"] = df["Material"].apply(get_department)
 
 # Convert Plant codes to names
 plant_map = {

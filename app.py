@@ -192,11 +192,14 @@ electrical_items = set(
     .str.strip()
 )
 
-material = "604300000849"
+test_material = "604300000849"
 
-st.write("In master:", material in electrical_items)
-st.write("In df:", material in df["Material"].values)
+st.write("In master:", test_material in electrical_items)
 
+st.write(
+    "In MB52:",
+    df[df["Material"] == test_material][["Material"]]
+)
 df["Department"] = df["Material"].astype(str).str.strip().apply(
     lambda x: "Electrical" if x in electrical_items else "Mechanical"
 )

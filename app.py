@@ -114,7 +114,7 @@ PLANT = 2
 QTY = 15
 GRN = 8
 GRN_DATE = 9
-VALUE = 20
+VALUE = 19
 
 VALUE_COL = "Value in QualInsp."
 

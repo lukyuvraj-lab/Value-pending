@@ -182,7 +182,7 @@ df["Qty"] = pd.to_numeric(
 # -----------------------------
 @st.cache_data
 def load_master():
-    return pd.read_excel("material_master.xlsx", header=None)  # ✅
+    return pd.read_excel("material_master.xlsx", header=2)  # ✅
 
 master = load_master()
 

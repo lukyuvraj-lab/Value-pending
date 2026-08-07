@@ -181,6 +181,16 @@ df["Qty"] = pd.to_numeric(
 # Load Electrical Material Master
 # -----------------------------
 
+@st.cache_data
+def load_master():
+    return pd.read_excel("material_master.xlsx", header=2)  # ✅
+
+master = load_master()
+
+electrical_materials = set(
+    master["Material"].astype(str).str.strip()
+)
+
 def get_department(row):
     material = str(row["Material"]).strip()
     desc = str(row["Material Description"]).upper()
@@ -211,15 +221,7 @@ def get_department(row):
 
 df["Department"] = df.apply(get_department, axis=1)
 
-@st.cache_data
-def load_master():
-    return pd.read_excel("material_master.xlsx", header=2)  # ✅
 
-master = load_master()
-
-electrical_materials = set(
-    master["Material"].astype(str).str.strip()
-)
 
 df["Material"] = df["Material"].astype(str).str.strip()
 
@@ -246,7 +248,6 @@ def is_electrical(desc):
 
     return "Mechanical"
 
-df["Department"] = df["Material Description"].apply(is_electrical)
 
 # -----------------------------
 # Department Logic

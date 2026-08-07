@@ -181,8 +181,8 @@ df["Qty"] = pd.to_numeric(
 # Load Electrical Material Master
 # -----------------------------
 @st.cache_data
-master = load_master():
-
+def load_master():
+    return pd.read_excel("material_master.xlsx", header=None)  # ✅
 electrical_materials = set(
     master[0].fillna("").astype(str).str.strip()
 )

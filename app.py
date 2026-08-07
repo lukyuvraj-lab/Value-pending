@@ -181,27 +181,24 @@ df["Qty"] = pd.to_numeric(
 # Load Electrical Material Master
 # -----------------------------
 @st.cache_data
-def load_master():
-    return pd.read_excel("material_master.xlsx", header=None)
-
 master = load_master()
-electrical_items = set(
-    master[0]
-    .fillna(0)
-    .astype(str)
-    .str.strip()
+
+electrical_materials = set(
+    master[0].fillna("").astype(str).str.strip()
 )
 
-test_material = "601400000044"
-
-st.write("In master:", test_material in electrical_items)
-
-st.write(
-    "In MB52:",
-    df[df["Material"] == test_material][["Material"]]
+electrical_descriptions = set(
+    master[1].fillna("").astype(str).str.strip()
 )
-df["Department"] = df["Material"].astype(str).str.strip().apply(
-    lambda x: "Electrical" if x in electrical_items else "Mechanical"
+
+df["Department"] = df.apply(
+    lambda row: "Electrical"
+    if (
+        str(row["Material"]).strip() in electrical_materials
+        or str(row["Material Description"]).strip() in electrical_descriptions
+    )
+    else "Mechanical",
+    axis=1
 )
 
 # -----------------------------

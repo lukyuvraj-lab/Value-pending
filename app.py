@@ -198,7 +198,7 @@ df["Department"] = df["Material"].apply(
     else "Mechanical"
 )
 electrical_descriptions = (
-    master[1]
+    master["Material Description"]
     .fillna("")
     .astype(str)
     .str.upper()

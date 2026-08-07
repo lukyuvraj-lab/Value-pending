@@ -180,6 +180,37 @@ df["Qty"] = pd.to_numeric(
 # -----------------------------
 # Load Electrical Material Master
 # -----------------------------
+
+def get_department(row):
+    material = str(row["Material"]).strip()
+    desc = str(row["Material Description"]).upper()
+
+    # Electrical master match
+    if material in electrical_materials:
+        return "Electrical"
+
+    # Mechanical series
+    if material.startswith(("2", "3", "5")):
+        return "Mechanical"
+
+    # Mechanical keywords
+    mechanical_keywords = [
+        "WELDED",
+        "HEX SOCKET",
+        "COVER",
+        "BRACKET",
+        "LABEL",
+        "TAP"
+    ]
+
+    if any(word in desc for word in mechanical_keywords):
+        return "Mechanical"
+
+    # Default
+    return "Electrical"
+
+df["Department"] = df.apply(get_department, axis=1)
+
 @st.cache_data
 def load_master():
     return pd.read_excel("material_master.xlsx", header=2)  # ✅

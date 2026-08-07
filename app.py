@@ -193,16 +193,25 @@ electrical_materials = set(
 electrical_descriptions = set(
     master[1].fillna("").astype(str).str.strip()
 )
-
-df["Department"] = df.apply(
-    lambda row: "Electrical"
-    if (
-        str(row["Material"]).strip() in electrical_materials
-        or str(row["Material Description"]).strip() in electrical_descriptions
-    )
-    else "Mechanical",
-    axis=1
+electrical_descriptions = (
+    master[1]
+    .fillna("")
+    .astype(str)
+    .str.upper()
+    .str.strip()
+    .tolist()
 )
+
+def is_electrical(desc):
+    desc = str(desc).upper().strip()
+
+    for master_desc in electrical_descriptions:
+        if master_desc and master_desc in desc:
+            return "Electrical"
+
+    return "Mechanical"
+
+df["Department"] = df["Material Description"].apply(is_electrical)
 
 # -----------------------------
 # Department Logic

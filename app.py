@@ -181,7 +181,7 @@ df["Qty"] = pd.to_numeric(
 # Load Electrical Material Master
 # -----------------------------
 @st.cache_data
-master = load_master()
+master = load_master():
 
 electrical_materials = set(
     master[0].fillna("").astype(str).str.strip()

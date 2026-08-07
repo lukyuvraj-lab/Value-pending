@@ -187,11 +187,15 @@ def load_master():
 master = load_master()
 
 electrical_materials = set(
-    master[0].fillna("").astype(str).str.strip()
+    master["Material"].astype(str).str.strip()
 )
 
-electrical_descriptions = set(
-    master[1].fillna("").astype(str).str.strip()
+df["Material"] = df["Material"].astype(str).str.strip()
+
+df["Department"] = df["Material"].apply(
+    lambda x: "Electrical"
+    if x in electrical_materials
+    else "Mechanical"
 )
 electrical_descriptions = (
     master[1]

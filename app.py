@@ -762,34 +762,59 @@ st.dataframe(
 )
 
 # =====================================================
+# =====================================================
 # GRN Details
 # =====================================================
 
 st.markdown("---")
 st.subheader("🔍 GRN Details")
 
+# Check GRN column
+if "GRN" not in filtered.columns:
+    st.error("GRN column is not available in the processed data.")
+
+    st.write("Available columns:")
+    st.write(filtered.columns.tolist())
+
+    st.stop()
+
 selected_grn = st.selectbox(
     "Select GRN",
-    sorted(filtered["GRN"].astype(str).unique())
+    sorted(
+        filtered["GRN"]
+        .dropna()
+        .astype(str)
+        .str.strip()
+        .unique()
+    )
 )
 
 grn_details = filtered[
-    filtered["GRN"].astype(str) == selected_grn
+    filtered["GRN"].astype(str).str.strip() == selected_grn
 ][[
     "Plant",
     "Department",
     "GRN",
     "Material",
     "Material Description",
-    "Quality Inspection",
+    "Qty",
     "Value"
 ]]
+
+# Rename Qty only for display
+grn_details = grn_details.rename(
+    columns={
+        "Qty": "Quality Inspection"
+    }
+)
 
 st.dataframe(
     grn_details,
     use_container_width=True,
     hide_index=True
 )
+
+
 #Excel Download
 output = io.BytesIO()
 

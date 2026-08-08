@@ -318,7 +318,7 @@ df["Qty"] = df["Qty"].map(
 def load_master():
     return pd.read_excel(
         "material_master.xlsx",
-        header=0
+        header=None
     )
 
 

@@ -5,6 +5,7 @@ import time   # 👈 Add this
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import io
+import os
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 def indian_currency(amount):
@@ -315,7 +316,7 @@ df["Qty"] = df["Qty"].map(
 # =====================================================
 
 @st.cache_data
-def load_master():
+def load_master(file_mmtime):
     return pd.read_excel(
         "material_master.xlsx",
         header=2

@@ -311,38 +311,36 @@ df["Qty"] = df["Qty"].map(
     lambda x: f"{x:g}"
 )
 
-# =====================================================
+# ============================================================
 # DEPARTMENT CLASSIFICATION
-# =====================================================
+# ============================================================
 
-@st.cache_data
-def load_master(file_mmtime):
+def load_master():
     return pd.read_excel(
         "material_master.xlsx",
         header=2
     )
-master = load_master(os.path.getmtime("material_master.xlsx"))
+
+# Always read the latest material master file
+master = load_master()
+
+
 def normalize_material(value):
     if pd.isna(value):
         return ""
+
     value = str(value).strip()
+
     if value.endswith(".0"):
         value = value[:-2]
+
     return value
 
-# Use first column as material list
+
+# Material column = Column A in Excel
 electrical_materials = set(
-    master.iloc[:, 0].apply(normalize_material)
-)
-
-electrical_materials.discard("")
-
-# -----------------------------------------------------
-# Electrical Material Master
-# -----------------------------------------------------
-
-electrical_materials = set(
-    master.iloc[:, 1].apply(normalize_material)
+    master.iloc[:, 0]
+    .apply(normalize_material)
 )
 
 electrical_materials.discard("")

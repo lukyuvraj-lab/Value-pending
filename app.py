@@ -333,7 +333,7 @@ def normalize_material(value):
 
 # Use first column as material list
 electrical_materials = set(
-    master.iloc[:, 0].apply(normalize_material)
+    master.iloc[:, 1].apply(normalize_material)
 )
 
 electrical_materials.discard("")

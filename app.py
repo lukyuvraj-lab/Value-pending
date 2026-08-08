@@ -123,9 +123,9 @@ REQUIRED_COLUMNS = {
     "Material": "Material",
     "Material Description": "Material Description",
     "Plant": "Plant",
-    "GRN": "GRN",
-    "GRN Date": "GRN Date",
-    "Quantity": "Quality inspection",
+    "GRN NO": "GRN",
+    "GRN DATE": "GRN Date",
+    "Quality Inspection": "Quality inspection",
     "Value": "Value in QualInsp."
 }
 

@@ -310,6 +310,7 @@ df["Qty"] = df["Qty"].map(
     lambda x: f"{x:g}"
 )
 # =====================================================
+# =====================================================
 # DEPARTMENT CLASSIFICATION
 # =====================================================
 
@@ -317,105 +318,118 @@ df["Qty"] = df["Qty"].map(
 def load_master():
     return pd.read_excel(
         "material_master.xlsx",
-        header=2
+        header=0
     )
+
 
 master = load_master()
 
-# -----------------------------
-# Normalize Material Numbers
-# -----------------------------
+master.columns = (
+    master.columns
+    .astype(str)
+    .str.strip()
+)
+
+
+# -----------------------------------------------------
+# Normalize Material
+# -----------------------------------------------------
+
 def normalize_material(value):
+
     if pd.isna(value):
         return ""
 
     value = str(value).strip()
 
-    # Remove Excel .0
     if value.endswith(".0"):
         value = value[:-2]
 
     return value
 
 
-# -----------------------------
-# Normalize Description
-# -----------------------------
-def normalize_description(value):
-    if pd.isna(value):
-        return ""
-
-    return " ".join(
-        str(value)
-        .upper()
-        .strip()
-        .split()
-    )
-
-
-# -----------------------------
+# -----------------------------------------------------
 # Electrical Material Master
-# -----------------------------
+# -----------------------------------------------------
+
 electrical_materials = set(
     master["Material"]
     .apply(normalize_material)
 )
 
-electrical_descriptions = set(
-    master["Material Description"]
-    .apply(normalize_description)
+electrical_materials.discard("")
+
+
+# -----------------------------------------------------
+# Mechanical starting series
+# -----------------------------------------------------
+
+mechanical_prefixes = (
+    "1091",
+    "1092",
+    "1093",
+    "1094",
+    "1100",
+    "2",
+    "3",
+    "5"
 )
 
 
-# -----------------------------
-# Prepare MB52 data
-# -----------------------------
-df["Material"] = df["Material"].apply(
-    normalize_material
-)
+# -----------------------------------------------------
+# Mechanical descriptions for Series 4
+# -----------------------------------------------------
 
-df["Material Description"] = (
-    df["Material Description"]
-    .apply(normalize_description)
-)
+series4_mechanical_keywords = [
+    "HEAT SHRINKABLE TUBE",
+    "HEAT SHRINK",
+    "BOOT",
+    "SLEEVE"
+]
 
 
-# -----------------------------
+# -----------------------------------------------------
 # Department Logic
-# -----------------------------
+# -----------------------------------------------------
+
 def get_department(row):
 
-    material = row["Material"]
-    description = row["Material Description"]
+    material = normalize_material(
+        row["Material"]
+    )
 
-    # 1️⃣ Exact Material Number match
+    description = str(
+        row["Material Description"]
+    ).upper().strip()
+
+
+    # 1. Electrical Material Master
     if material in electrical_materials:
         return "Electrical"
 
-    # 2️⃣ Exact full Description match
-    if description in electrical_descriptions:
-        return "Electrical"
 
-    # 3️⃣ Mechanical Material Series
-    if material.startswith(("2", "3", "5")):
+    # 2. Mechanical starting series
+    if material.startswith(mechanical_prefixes):
         return "Mechanical"
 
-    # 4️⃣ Mechanical description keywords
-    mechanical_keywords = [
-        "WELDED",
-        "HEX SOCKET",
-        "COVER",
-        "BRACKET",
-        "LABEL",
-        "TAP"
-    ]
 
-    if any(keyword in description for keyword in mechanical_keywords):
-        return "Mechanical"
+    # 3. Series 4 special cases
+    if material.startswith("4"):
 
-    # 5️⃣ Unknown → Mechanical
-    return "Mechanical"
+        if any(
+            keyword in description
+            for keyword in series4_mechanical_keywords
+        ):
+            return "Mechanical"
 
+
+    # 4. Not identified
+    return "New Item"
+
+
+# -----------------------------------------------------
+# Apply
+# -----------------------------------------------------
 
 df["Department"] = df.apply(
     get_department,

@@ -177,33 +177,98 @@ df["Qty"] = pd.to_numeric(
     df.iloc[:, QTY],
     errors="coerce"
 ).fillna(0)
-# -----------------------------
-# Load Electrical Material Master
-# -----------------------------
+# =====================================================
+# DEPARTMENT CLASSIFICATION
+# =====================================================
 
 @st.cache_data
 def load_master():
-    return pd.read_excel("material_master.xlsx", header=2)  # ✅
+    return pd.read_excel(
+        "material_master.xlsx",
+        header=2
+    )
 
 master = load_master()
 
+# -----------------------------
+# Normalize Material Numbers
+# -----------------------------
+def normalize_material(value):
+    if pd.isna(value):
+        return ""
+
+    value = str(value).strip()
+
+    # Remove Excel .0
+    if value.endswith(".0"):
+        value = value[:-2]
+
+    return value
+
+
+# -----------------------------
+# Normalize Description
+# -----------------------------
+def normalize_description(value):
+    if pd.isna(value):
+        return ""
+
+    return " ".join(
+        str(value)
+        .upper()
+        .strip()
+        .split()
+    )
+
+
+# -----------------------------
+# Electrical Material Master
+# -----------------------------
 electrical_materials = set(
-    master["Material"].astype(str).str.strip()
+    master["Material"]
+    .apply(normalize_material)
 )
 
-def get_department(row):
-    material = str(row["Material"]).strip()
-    desc = str(row["Material Description"]).upper()
+electrical_descriptions = set(
+    master["Material Description"]
+    .apply(normalize_description)
+)
 
-    # Electrical master match
+
+# -----------------------------
+# Prepare MB52 data
+# -----------------------------
+df["Material"] = df["Material"].apply(
+    normalize_material
+)
+
+df["Material Description"] = (
+    df["Material Description"]
+    .apply(normalize_description)
+)
+
+
+# -----------------------------
+# Department Logic
+# -----------------------------
+def get_department(row):
+
+    material = row["Material"]
+    description = row["Material Description"]
+
+    # 1️⃣ Exact Material Number match
     if material in electrical_materials:
         return "Electrical"
 
-    # Mechanical series
+    # 2️⃣ Exact full Description match
+    if description in electrical_descriptions:
+        return "Electrical"
+
+    # 3️⃣ Mechanical Material Series
     if material.startswith(("2", "3", "5")):
         return "Mechanical"
 
-    # Mechanical keywords
+    # 4️⃣ Mechanical description keywords
     mechanical_keywords = [
         "WELDED",
         "HEX SOCKET",
@@ -213,41 +278,17 @@ def get_department(row):
         "TAP"
     ]
 
-    if any(word in desc for word in mechanical_keywords):
+    if any(keyword in description for keyword in mechanical_keywords):
         return "Mechanical"
 
-    # Default
-    return "Electrical"
-
-df["Department"] = df.apply(get_department, axis=1)
-
-
-
-df["Material"] = df["Material"].astype(str).str.strip()
-
-df["Department"] = df["Material"].apply(
-    lambda x: "Electrical"
-    if x in electrical_materials
-    else "Mechanical"
-)
-electrical_descriptions = (
-    master["Material Description"]
-    .fillna("")
-    .astype(str)
-    .str.upper()
-    .str.strip()
-    .tolist()
-)
-
-def is_electrical(desc):
-    desc = str(desc).upper().strip()
-
-    for master_desc in electrical_descriptions:
-        if master_desc and master_desc in desc:
-            return "Electrical"
-
+    # 5️⃣ Unknown → Mechanical
     return "Mechanical"
 
+
+df["Department"] = df.apply(
+    get_department,
+    axis=1
+)
 
 # -----------------------------
 # Department Logic

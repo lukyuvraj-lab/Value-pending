@@ -318,7 +318,7 @@ df["Qty"] = df["Qty"].map(
 def load_master():
     return pd.read_excel(
         "material_master.xlsx",
-        header=None
+        header=2
     )
 
 master = load_master()
@@ -333,7 +333,7 @@ def normalize_material(value):
 
 # Use first column as material list
 electrical_materials = set(
-    master.iloc[:, 1].apply(normalize_material)
+    master.iloc[:, 0].apply(normalize_material)
 )
 
 electrical_materials.discard("")

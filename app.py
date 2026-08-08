@@ -105,30 +105,98 @@ if df.empty:
     st.error("Uploaded file is empty.")
     st.stop()
 
-# -----------------------------
-# Required Column Positions
-# -----------------------------
-MATERIAL = 0
-MATERIAL_DESC = 1
-PLANT = 2
-QTY = 15
-GRN = 8
-GRN_DATE = 9
-VALUE = 19
+# =====================================================
+# READ SAP MB52 COLUMNS BY HEADER NAME
+# =====================================================
 
-VALUE_COL = "Value in QualInsp."
+# Clean header names
+df.columns = (
+    df.columns
+    .astype(str)
+    .str.strip()
+)
 
-# Validate column exists
-if VALUE_COL not in df.columns:
+# -----------------------------
+# Required SAP Headers
+# -----------------------------
+REQUIRED_COLUMNS = {
+    "Material": "Material",
+    "Material Description": "Material Description",
+    "Plant": "Plant",
+    "GRN": "GRN",
+    "GRN Date": "GRN Date",
+    "Quantity": "Quality inspection",
+    "Value": "Value in QualInsp."
+}
+
+# -----------------------------
+# Check required headers
+# -----------------------------
+missing_columns = [
+    header
+    for header in REQUIRED_COLUMNS.values()
+    if header not in df.columns
+]
+
+if missing_columns:
     st.error(
-        f"Excel format is incorrect.\n'{VALUE_COL}' column not found."
+        "SAP Excel format is incorrect.\n\n"
+        "Missing column(s):\n"
+        + "\n".join(f"• {x}" for x in missing_columns)
     )
-    st.write("Available columns:", df.columns.tolist())
+
+    st.write("Available SAP headers:")
+    st.write(df.columns.tolist())
+
     st.stop()
 
-# Read value column
+# -----------------------------
+# Read by HEADER NAME
+# -----------------------------
+
+df["Material"] = (
+    df["Material"]
+    .fillna("")
+    .astype(str)
+    .str.replace(".0", "", regex=False)
+    .str.strip()
+)
+
+df["Material Description"] = (
+    df["Material Description"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+df["Plant"] = (
+    df["Plant"]
+    .fillna("")
+    .astype(str)
+    .str.replace(".0", "", regex=False)
+    .str.strip()
+)
+
+df["GRN"] = (
+    df["GRN"]
+    .fillna("")
+    .astype(str)
+    .str.replace(".0", "", regex=False)
+    .str.strip()
+)
+
+df["GRN DATE"] = pd.to_datetime(
+    df["GRN Date"],
+    errors="coerce"
+)
+
+df["Qty"] = pd.to_numeric(
+    df["Quality inspection"],
+    errors="coerce"
+).fillna(0)
+
 df["Value"] = pd.to_numeric(
-    df[VALUE_COL],
+    df["Value in QualInsp."],
     errors="coerce"
 ).fillna(0)
 

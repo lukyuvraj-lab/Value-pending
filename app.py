@@ -260,7 +260,7 @@ df["Value"] = pd.to_numeric(
 # Prepare Data
 # -----------------------------
 df["Material"] = (
-  df.iloc[:, MATERIAL]
+  df.iloc["MATERIAL"]
     .astype(str)
     .str.replace(".0", "", regex=False)
     .str.strip()

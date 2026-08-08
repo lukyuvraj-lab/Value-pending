@@ -106,56 +106,112 @@ if df.empty:
     st.stop()
 
 # =====================================================
-# READ SAP MB52 COLUMNS BY HEADER NAME
+# SAP MB52 - READ COLUMNS BY HEADER NAME
 # =====================================================
 
-# Clean header names
-df.columns = (
-    df.columns
-    .astype(str)
-    .str.strip()
-)
+def clean_header(name):
+    return (
+        str(name)
+        .replace("\n", " ")
+        .replace("\r", " ")
+        .strip()
+        .lower()
+    )
+
+
+# Clean Excel headers
+df.columns = [clean_header(col) for col in df.columns]
+
+
+def find_column(possible_names):
+    for col in df.columns:
+        if col in [clean_header(x) for x in possible_names]:
+            return col
+
+    return None
+
 
 # -----------------------------
-# Required SAP Headers
+# Find SAP columns
 # -----------------------------
-REQUIRED_COLUMNS = {
-    "Material": "Material",
-    "Material Description": "Material Description",
-    "Plant": "Plant",
-    "GRN NO": "GRN",
-    "GRN DATE": "GRN Date",
-    "Quality Inspection": "Quality inspection",
-    "Value": "Value in QualInsp."
+
+material_col = find_column([
+    "Material"
+])
+
+description_col = find_column([
+    "Material Description"
+])
+
+plant_col = find_column([
+    "Plant"
+])
+
+grn_col = find_column([
+    "GRN",
+    "GRN No",
+    "GRN Number"
+])
+
+grn_date_col = find_column([
+    "GRN Date",
+    "GRN Posting Date",
+    "Posting Date"
+])
+
+qty_col = find_column([
+    "Quality inspection",
+    "Quality Inspection",
+    "Quality inspection Qty",
+    "Quality Inspection Qty"
+])
+
+value_col = find_column([
+    "Value in QualInsp.",
+    "Value in QualInsp",
+    "Value in Quality Inspection"
+])
+
+
+# -----------------------------
+# Check required columns
+# -----------------------------
+
+required = {
+    "Material": material_col,
+    "Material Description": description_col,
+    "Plant": plant_col,
+    "GRN": grn_col,
+    "GRN Date": grn_date_col,
+    "Quality inspection": qty_col,
+    "Value": value_col
 }
 
-# -----------------------------
-# Check required headers
-# -----------------------------
-missing_columns = [
-    header
-    for header in REQUIRED_COLUMNS.values()
-    if header not in df.columns
+missing = [
+    name
+    for name, column in required.items()
+    if column is None
 ]
 
-if missing_columns:
+if missing:
     st.error(
         "SAP Excel format is incorrect.\n\n"
         "Missing column(s):\n"
-        + "\n".join(f"• {x}" for x in missing_columns)
+        + "\n".join("• " + x for x in missing)
     )
 
-    st.write("Available SAP headers:")
+    st.write("Actual SAP headers found:")
     st.write(df.columns.tolist())
 
     st.stop()
 
+
 # -----------------------------
-# Read by HEADER NAME
+# Create standard app columns
 # -----------------------------
 
 df["Material"] = (
-    df["Material"]
+    df[material_col]
     .fillna("")
     .astype(str)
     .str.replace(".0", "", regex=False)
@@ -163,14 +219,14 @@ df["Material"] = (
 )
 
 df["Material Description"] = (
-    df["Material Description"]
+    df[description_col]
     .fillna("")
     .astype(str)
     .str.strip()
 )
 
 df["Plant"] = (
-    df["Plant"]
+    df[plant_col]
     .fillna("")
     .astype(str)
     .str.replace(".0", "", regex=False)
@@ -178,7 +234,7 @@ df["Plant"] = (
 )
 
 df["GRN"] = (
-    df["GRN"]
+    df[grn_col]
     .fillna("")
     .astype(str)
     .str.replace(".0", "", regex=False)
@@ -186,17 +242,17 @@ df["GRN"] = (
 )
 
 df["GRN DATE"] = pd.to_datetime(
-    df["GRN Date"],
+    df[grn_date_col],
     errors="coerce"
 )
 
 df["Qty"] = pd.to_numeric(
-    df["Quality inspection"],
+    df[qty_col],
     errors="coerce"
 ).fillna(0)
 
 df["Value"] = pd.to_numeric(
-    df["Value in QualInsp."],
+    df[value_col],
     errors="coerce"
 ).fillna(0)
 

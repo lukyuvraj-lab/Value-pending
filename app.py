@@ -352,13 +352,33 @@ def normalize_material(value):
 # Electrical Material Master
 # -----------------------------------------------------
 
+# Electrical Material Master
+
+master_material_col = None
+
+for col in master.columns:
+    if col.strip().lower() in [
+        "material",
+        "material no",
+        "material number",
+        "material code",
+        "material_code"
+    ]:
+        master_material_col = col
+        break
+
+if master_material_col is None:
+    st.error("❌ Material column not found in material_master.xlsx")
+    st.write("Columns found:")
+    st.write(master.columns.tolist())
+    st.stop()
+
 electrical_materials = set(
-    master["Material"]
+    master[master_material_col]
     .apply(normalize_material)
 )
 
 electrical_materials.discard("")
-
 
 # -----------------------------------------------------
 # Mechanical starting series

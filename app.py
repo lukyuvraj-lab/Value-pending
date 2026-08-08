@@ -250,7 +250,7 @@ df["Qty"] = pd.to_numeric(
     df[qty_col],
     errors="coerce"
 ).fillna(0).map(
-    lamba x: int(x) if x == int(x) else x
+    lambda x: int(x) if x == int(x) else x
 )
 
 df["Value"] = pd.to_numeric(

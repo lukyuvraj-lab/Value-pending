@@ -249,9 +249,10 @@ df["GRN DATE"] = pd.to_datetime(
 df["Qty"] = pd.to_numeric(
     df[qty_col],
     errors="coerce"
-).fillna(0).map(
-    lambda x: int(x) if x == int(x) else x
-)
+).fillna(0)
+
+df["QTY"] = df["QTY"].map(
+    lambda x: f"{x:g}"
 
 df["Value"] = pd.to_numeric(
     df[value_col],

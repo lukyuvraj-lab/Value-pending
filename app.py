@@ -302,7 +302,9 @@ df["Material Description"] = (
 df["Qty"] = pd.to_numeric(
     df["Qty"],
     errors="coerce"
-).fillna(0)
+).fillna(0).map(
+    lambda x: int(x) if x == int(x) else x
+)
 # =====================================================
 # DEPARTMENT CLASSIFICATION
 # =====================================================

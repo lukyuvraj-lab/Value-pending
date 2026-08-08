@@ -267,38 +267,38 @@ df["Material"] = (
 )
 
 df["Plant"] = (
-    df.iloc[:, PLANT]
+    df["Plant"]
     .fillna("")
     .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
 df["GRN"] = (
-    df.iloc[:, GRN]
+    df["GRN"]
     .fillna("")
     .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
 df["GRN DATE"] = pd.to_datetime(
-    df.iloc[:, GRN_DATE],
+    df["GRN DATE"],
     errors="coerce"
 )
 
 df["Value"] = pd.to_numeric(
-    df.iloc[:, VALUE],
+    df["Value"],
     errors="coerce"
 ).fillna(0)
 
 df["Material Description"] = (
-    df.iloc[:, MATERIAL_DESC]
+    df"Material Description"],
     .fillna("")
     .astype(str)
     .str.strip()
 )
 
 df["Qty"] = pd.to_numeric(
-    df.iloc[:, QTY],
+    df["Qty"],
     errors="coerce"
 ).fillna(0)
 # =====================================================

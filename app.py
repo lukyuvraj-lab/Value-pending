@@ -251,8 +251,9 @@ df["Qty"] = pd.to_numeric(
     errors="coerce"
 ).fillna(0)
 
-df["QTY"] = df["QTY"].map(
+df["Qty"] = df["Qty"].map(
     lambda x: f"{x:g}"
+)
 
 df["Value"] = pd.to_numeric(
     df[value_col],

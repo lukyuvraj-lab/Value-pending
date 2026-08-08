@@ -320,7 +320,6 @@ def load_master():
         "material_master.xlsx",
         header=2
     )
-
 master = load_master()
 
 def normalize_material(value):

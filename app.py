@@ -322,8 +322,7 @@ def load_master():
     )
 master = load_master()
  os.path.getmtime("material_master.xlsx")
-
-
+)
 def normalize_material(value):
     if pd.isna(value):
         return ""

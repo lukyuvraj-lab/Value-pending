@@ -291,7 +291,7 @@ df["Value"] = pd.to_numeric(
 ).fillna(0)
 
 df["Material Description"] = (
-    df["Material Description"],
+    df["Material Description"]
     .fillna("")
     .astype(str)
     .str.strip()

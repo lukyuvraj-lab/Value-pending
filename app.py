@@ -260,45 +260,45 @@ df["Value"] = pd.to_numeric(
 # Prepare Data
 # -----------------------------
 df["Material"] = (
-  df["MATERIAL"]
+  df.iloc[:,MATERIAL]
     .astype(str)
     .str.replace(".0", "", regex=False)
     .str.strip()
 )
 
 df["Plant"] = (
-    df["Plant"]
+    df.iloc[:, PLANT]
     .fillna("")
     .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
 df["GRN"] = (
-    df["GRN"]
+    df.iloc[:, GRN]
     .fillna("")
     .apply(lambda x: str(x).split(".")[0])
     .str.strip()
 )
 
 df["GRN DATE"] = pd.to_datetime(
-    df["GRN DATE"],
+    df.iloc[:, GRN_DATE],
     errors="coerce"
 )
 
 df["Value"] = pd.to_numeric(
-    df["Value"],
+    df.iloc[:, VALUE],
     errors="coerce"
 ).fillna(0)
 
 df["Material Description"] = (
-    df["MATERIAL_DESC"]
+    df.iloc[:, MATERIAL_DESC]
     .fillna("")
     .astype(str)
     .str.strip()
 )
 
 df["Qty"] = pd.to_numeric(
-    df[QTY],
+    df.iloc[:, QTY],
     errors="coerce"
 ).fillna(0)
 # =====================================================

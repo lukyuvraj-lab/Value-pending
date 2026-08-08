@@ -321,9 +321,7 @@ def load_master():
         header=2
     )
 
-# Always read the latest material master file
 master = load_master()
-
 
 def normalize_material(value):
     if pd.isna(value):
@@ -336,11 +334,9 @@ def normalize_material(value):
 
     return value
 
-
-# Material column = Column A in Excel
+# Column A = Material
 electrical_materials = set(
-    master.iloc[:, 0]
-    .apply(normalize_material)
+    master.iloc[:, 0].apply(normalize_material)
 )
 
 electrical_materials.discard("")

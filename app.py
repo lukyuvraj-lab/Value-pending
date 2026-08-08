@@ -394,26 +394,38 @@ series4_mechanical_keywords = [
 
 def get_department(row):
 
-    material = normalize_material(
-        row["Material"]
-    )
+    material = normalize_material(row["Material"])
 
     description = str(
         row["Material Description"]
     ).upper().strip()
 
-
     # 1. Electrical Material Master
     if material in electrical_materials:
         return "Electrical"
 
-
     # 2. Mechanical starting series
+    mechanical_prefixes = (
+        "1091",
+        "1092",
+        "1093",
+        "1094",
+        "1100",
+        "2",
+        "3",
+        "5"
+    )
+
     if material.startswith(mechanical_prefixes):
         return "Mechanical"
 
+    # 3. Series 4 special Mechanical items
+    series4_mechanical_keywords = [
+        "HEAT SHRINKABLE TUBE",
+        "HEAT SHRINKABLE BOOT",
+        "HEAT SHRINKABLE SLEEVE"
+    ]
 
-    # 3. Series 4 special cases
     if material.startswith("4"):
 
         if any(
@@ -422,9 +434,18 @@ def get_department(row):
         ):
             return "Mechanical"
 
+        # Other 4-series items are Electrical
+        return "Electrical"
 
     # 4. Not identified
     return "New Item"
+
+
+# Apply Department
+df["Department"] = df.apply(
+    get_department,
+    axis=1
+)
 
 
 # -----------------------------------------------------

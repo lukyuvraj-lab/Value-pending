@@ -309,7 +309,7 @@ df["Qty"] = pd.to_numeric(
 df["Qty"] = df["Qty"].map(
     lambda x: f"{x:g}"
 )
-# =====================================================
+
 # =====================================================
 # DEPARTMENT CLASSIFICATION
 # =====================================================
@@ -321,57 +321,22 @@ def load_master():
         header=None
     )
 
-
 master = load_master()
 
-master.columns = (
-    master.columns
-    .astype(str)
-    .str.strip()
-)
-
-
-# -----------------------------------------------------
-# Normalize Material
-# -----------------------------------------------------
-
 def normalize_material(value):
-
     if pd.isna(value):
         return ""
-
     value = str(value).strip()
-
     if value.endswith(".0"):
         value = value[:-2]
-
     return value
 
+# Use first column as material list
+electrical_materials = set(
+    master.iloc[:, 0].apply(normalize_material)
+)
 
-# -----------------------------------------------------
-# Electrical Material Master
-# -----------------------------------------------------
-
-# Electrical Material Master
-
-master_material_col = None
-
-for col in master.columns:
-    if col.strip().lower() in [
-        "material",
-        "material no",
-        "material number",
-        "material code",
-        "material_code"
-    ]:
-        master_material_col = col
-        break
-
-if master_material_col is None:
-    st.error("❌ Material column not found in material_master.xlsx")
-    st.write("Columns found:")
-    st.write(master.columns.tolist())
-    st.stop()
+electrical_materials.discard("")
 
 electrical_materials = set(
     master[master_material_col]

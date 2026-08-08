@@ -338,9 +338,12 @@ electrical_materials = set(
 
 electrical_materials.discard("")
 
+# -----------------------------------------------------
+# Electrical Material Master
+# -----------------------------------------------------
+
 electrical_materials = set(
-    master[master_material_col]
-    .apply(normalize_material)
+    master.iloc[:, 1].apply(normalize_material)
 )
 
 electrical_materials.discard("")

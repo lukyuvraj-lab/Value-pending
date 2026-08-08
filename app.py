@@ -988,9 +988,9 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
         for cell in row:
             if isinstance(cell.value, (int, float)):
                 if float(cell.value).is_integer():
-                    cell.number_format = "#,##0"
+                    cell.number_format = "0"
                 else:
-                    cell.number_format = "#,##0.00"
+                    cell.number_format = "0.00"
 
 output.seek(0)
 

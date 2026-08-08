@@ -244,6 +244,8 @@ df["GRN"] = (
 df["GRN DATE"] = pd.to_datetime(
     df[grn_date_col],
     errors="coerce"
+).fillna(0).map(
+    lamba x: int(x) if x == int(x) else x
 )
 
 df["Qty"] = pd.to_numeric(

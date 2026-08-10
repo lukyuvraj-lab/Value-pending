@@ -350,7 +350,7 @@ def get_department(material):
 # 3852 series is Electrical, even though it starts with 3
 # -----------------------------------------------------
 if material.startswith("3852"):
-    return"Electrical"
+    return "Electrical"
 # -----------------------------------------------------
 # Mechanical starting series
 # -----------------------------------------------------

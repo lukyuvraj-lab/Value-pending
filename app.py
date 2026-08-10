@@ -719,10 +719,10 @@ detail["GRN DATE"] = pd.to_datetime(
 today = pd.Timestamp(datetime.now(ZoneInfo("Asia/Kolkata")).date())
 
 # Calculate 5 working day due date (Saturday & Sunday excluded)
-detail["Due Date"] = detail["GRN DATE"] + BDay(5)
+detail["Due Date"] = detail["GRN DATE"] + BDay(4)
 
 # Calculate 5 working day due date (Saturday & Sunday excluded)
-detail["Due Date"] = detail["GRN DATE"] + BDay(5)
+detail["Due Date"] = detail["GRN DATE"] + BDay(4)
 
 # Quarter-end override
 quarter_end = detail["GRN DATE"] + pd.offsets.QuarterEnd(0)
@@ -737,7 +737,7 @@ detail.loc[mask, "Due Date"] = quarter_end[mask]
 # Calculate Ageing
 today = pd.Timestamp.today().normalize()
 
-detail["Closing 5 Days"] = (
+detail["Closing 4 Days"] = (
     detail["Due Date"] - today
 ).dt.days
 

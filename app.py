@@ -342,9 +342,18 @@ electrical_materials = set(
 electrical_materials.discard("")
 
 # -----------------------------------------------------
+# Mechanical item finding
+# -----------------------------------------------------
+def get_department(material):
+    matrial = str(material).strip()
+# -----------------------------------------------------
+# 3852 series is Electrical, even though it starts with 3
+# -----------------------------------------------------
+if material.startswith("3852"):
+    return"Electrical"
+# -----------------------------------------------------
 # Mechanical starting series
 # -----------------------------------------------------
-
 mechanical_prefixes = (
     "1091",
     "1092",
@@ -355,11 +364,7 @@ mechanical_prefixes = (
     "3",
     "5"
 )
-# -----------------------------------------------------
-# 3852 series is Electrical, even though it starts with 3
-# -----------------------------------------------------
-if material.startswith("3852"):
-    return"Electrical"
+
 
 if material.startswith(mechanical_prefixes):
     return"Mechanical"

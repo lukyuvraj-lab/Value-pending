@@ -359,7 +359,7 @@ mechanical_prefixes = (
 # 3852 series is Electrical, even though it starts with 3
 # -----------------------------------------------------
 if material.startswith("3852"):
-return"Electrical"
+    return"Electrical"
 
 if material.startswith(mechanical_prefixes):
     return"Mechanical"

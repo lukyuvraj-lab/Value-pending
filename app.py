@@ -770,7 +770,7 @@ detail.rename(columns={
     "GRN": "GRN",
     "GRN DATE": "GRN Date",
     "Due Date": "Closing Date",
-    "Closing 5 Days": "Days Left",
+    "Closing 4 Days": "Days Left",
     "Value": "Pending Value (₹)"
 }, inplace=True)
 
@@ -794,7 +794,7 @@ st.dataframe(
     hide_index=True
 )
 
-# =====================================================
+
 # =====================================================
 # GRN Details
 # =====================================================

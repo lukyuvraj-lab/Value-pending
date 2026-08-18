@@ -1023,7 +1023,6 @@ report_columns["Plant"] = report["Plant"]
 report_columns["Department"] = report["Department"]
 report_columns["GRN Date"] = report_grn_date
 report_columns["Due Day"] = report_due_date
-report_columns["Days Left"] = report_days_left
 report_columns["GRN"] = report["GRN"]
 report_columns["Material"] = report["Material"]
 report_columns["Material Description"] = report["Material Description"]
@@ -1127,7 +1126,7 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
     red_font = Font(color="9C0006")
 
     for excel_row, days_left in enumerate(report_days_left.tolist(), start=2):
-        if pd.notna(days_left) and float(days_left) <= -5:
+        if pd.notna(days_left) and float(days_left) < 0:
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=excel_row, column=col).fill = red_fill
                 ws.cell(row=excel_row, column=col).font = red_font
@@ -1218,3 +1217,4 @@ Records : {len(display_df):,}
 Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
 """
 )
+

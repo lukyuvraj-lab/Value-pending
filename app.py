@@ -767,7 +767,7 @@ detail["GRN"] = (
 # Remove  .00000 from value
 # =====================================================
 
-detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
+detail["Value"] = detail["Value"].apply(indian_currency)
 
 detail.rename(columns={
     "Plant": "Plant",
@@ -1107,7 +1107,7 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
         ws.cell(row=row, column=3).number_format = "dd-mm-yyyy"  # GRN Date
         ws.cell(row=row, column=4).number_format = "dd-mm-yyyy"  # Due Day
         ws.cell(row=row, column=8).number_format = "0.##"       # Qty
-        ws.cell(row=row, column=10).number_format = "#,##,##0.00" # Value
+        ws.cell(row=row, column=10).number_format = "[$-en-IN]#,##,##0.00" # Value
 
     # Highlight rows that are 5 or more days overdue in red.
     # Days Left is calculated from Due Day and today's date.
@@ -1126,7 +1126,7 @@ with pd.ExcelWriter(output, engine="openpyxl") as writer:
 
     # Indian number formatting for Value in QualInsp.
     for row in range(2, ws.max_row + 1):
-        ws.cell(row=row, column=10).number_format = "#,##,##0.00"
+        ws.cell(row=row, column=10).number_format = "[$-en-IN]#,##,##0.00"
 
     # Readable column widths.
     for column_cells in ws.columns:
@@ -1146,8 +1146,6 @@ st.download_button(
     file_name=f"HQA_EM_Detailed_Data_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-
-
 # =====================================================
 # Pending Status Mail 
 # =====================================================

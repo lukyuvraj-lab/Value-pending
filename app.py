@@ -970,136 +970,180 @@ st.download_button(
 # =====================================================
 
 import io
-from openpyxl.styles import Font
+from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 
+# -----------------------------------------------------
+# Build the requested detailed download report
+# -----------------------------------------------------
+
+def source_col(aliases):
+    """Find a source Excel column using the same cleaned-header logic."""
+    for alias in aliases:
+        cleaned = clean_header(alias)
+        for col in df.columns:
+            if clean_header(col) == cleaned:
+                return col
+    return None
+
+
+def source_series(frame, aliases, default=""):
+    col = source_col(aliases)
+    if col is None:
+        return pd.Series([default] * len(frame), index=frame.index)
+    return frame[col]
+
+# Use the currently filtered data so the download matches the dashboard filters.
+report = filtered.copy()
+
+# Calculate Due Day for every source row using the same dashboard rule.
+report_grn_date = pd.to_datetime(report["GRN DATE"], errors="coerce")
+report_due_date = report_grn_date + BDay(4)
+report_quarter_end = report_grn_date + pd.offsets.QuarterEnd(0)
+report_mask = (
+    report_grn_date.dt.month.isin([3, 6, 9, 12]) &
+    (report_due_date > report_quarter_end)
+)
+report_due_date.loc[report_mask] = report_quarter_end.loc[report_mask]
+
+report_days_left = (
+    report_due_date - pd.Timestamp.now().normalize()
+).dt.days
+
+# Requested column order.
+report_columns = pd.DataFrame(index=report.index)
+report_columns["Plant"] = report["Plant"]
+report_columns["Department"] = report["Department"]
+report_columns["GRN Date"] = report_grn_date
+report_columns["Due Day"] = report_due_date
+report_columns["GRN"] = report["GRN"]
+report_columns["Material"] = report["Material"]
+report_columns["Material Description"] = report["Material Description"]
+report_columns["Qty"] = pd.to_numeric(report["Qty"], errors="coerce").fillna(0)
+report_columns["Base unit of measure"] = source_series(
+    report,
+    ["Base Unit of Measure", "Base Unit", "Base UoM", "Base unit of measure"]
+)
+report_columns["Value in Qualinsp."] = pd.to_numeric(
+    report["Value"], errors="coerce"
+).fillna(0)
+report_columns["Currency"] = source_series(
+    report, ["Currency", "Currency Key", "Curr."]
+)
+report_columns["Storage location"] = source_series(
+    report, ["Storage Location", "Storage Loc.", "SLoc", "SLoc."]
+)
+report_columns["Descr. of storage loc."] = source_series(
+    report,
+    [
+        "Descr. of Storage Loc.",
+        "Description of Storage Location",
+        "Storage Location Description",
+        "Descr of storage loc."
+    ]
+)
+report_columns["Wbs element"] = source_series(
+    report, ["WBS Element", "WBS", "Wbs element"]
+)
+report_columns["Material group"] = source_series(
+    report, ["Material Group", "Material Grp", "Mat. Group"]
+)
+report_columns["Material type"] = source_series(
+    report, ["Material Type", "Material Typ.", "Mat. Type"]
+)
+report_columns["Po no"] = source_series(
+    report, ["PO No", "PO No.", "PO Number", "Purchase Order", "Purchasing Document"]
+)
+
+# Keep dates as real Excel dates; Excel formatting below removes 00:00:00.
+report_columns["GRN Date"] = pd.to_datetime(report_columns["GRN Date"], errors="coerce")
+report_columns["Due Day"] = pd.to_datetime(report_columns["Due Day"], errors="coerce")
+
+# Clean text fields.
+for col in report_columns.columns:
+    if col not in ["GRN Date", "Due Day", "Qty", "Value in Qualinsp."]:
+        report_columns[col] = report_columns[col].fillna("").astype(str).str.strip()
+
+# GRN and Material should not contain Excel-style .0.
+for col in ["GRN", "Material"]:
+    report_columns[col] = (
+        report_columns[col]
+        .astype(str)
+        .str.replace(r"\.0$", "", regex=True)
+        .str.strip()
+    )
+
+# Excel report.
 output = io.BytesIO()
 
 with pd.ExcelWriter(output, engine="openpyxl") as writer:
-
-    # Write data
-    display_df.to_excel(writer, sheet_name="Detailed Data", index=False)
+    report_columns.to_excel(
+        writer,
+        sheet_name="Detailed Data",
+        index=False
+    )
 
     ws = writer.sheets["Detailed Data"]
 
-    # -----------------------------
-    # TOTAL ROW
-    # -----------------------------
-    last_row = ws.max_row + 1
+    # Header: blue fill + bold white font.
+    header_fill = PatternFill(
+        start_color="4472C4",
+        end_color="4472C4",
+        fill_type="solid"
+    )
+    header_font = Font(bold=True, color="FFFFFF")
 
-    ws.cell(row=last_row, column=1).value = "TOTAL"
-    ws.cell(row=last_row, column=1).font = Font(bold=True)
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
 
-    # Column T = 20 (Value in QualInsp.)
-    value_col = 20
-    col_letter = get_column_letter(value_col)
+    # Filter on the complete data range.
+    ws.auto_filter.ref = ws.dimensions
+    ws.freeze_panes = "A2"
 
-    ws.cell(
-        row=last_row,
-        column=value_col
-    ).value = f"=SUM({col_letter}2:{col_letter}{last_row-1})"
+    # Date format: no 00:00:00.
+    for row in range(2, ws.max_row + 1):
+        ws.cell(row=row, column=3).number_format = "dd-mm-yyyy"  # GRN Date
+        ws.cell(row=row, column=4).number_format = "dd-mm-yyyy"  # Due Day
+        ws.cell(row=row, column=8).number_format = "0.##"       # Qty
+        ws.cell(row=row, column=10).number_format = "#,##,##0.00" # Value
 
-    ws.cell(row=last_row, column=value_col).font = Font(bold=True)
-    ws.cell(row=last_row, column=value_col).number_format = "#,##0.00"
+    # Highlight rows that are 5 or more days overdue in red.
+    # Days Left is calculated from Due Day and today's date.
+    red_fill = PatternFill(
+        start_color="FFC7CE",
+        end_color="FFC7CE",
+        fill_type="solid"
+    )
+    red_font = Font(color="9C0006")
 
-    # -----------------------------
-    # AUTO WIDTH
-    # -----------------------------
-    for column in ws.columns:
+    for excel_row, days_left in enumerate(report_days_left.tolist(), start=2):
+        if pd.notna(days_left) and float(days_left) <= -5:
+            for col in range(1, ws.max_column + 1):
+                ws.cell(row=excel_row, column=col).fill = red_fill
+                ws.cell(row=excel_row, column=col).font = red_font
+
+    # Indian number formatting for Value in QualInsp.
+    for row in range(2, ws.max_row + 1):
+        ws.cell(row=row, column=10).number_format = "#,##,##0.00"
+
+    # Readable column widths.
+    for column_cells in ws.columns:
+        letter = get_column_letter(column_cells[0].column)
         max_length = 0
-        letter = column[0].column_letter
-
-        for cell in column:
-            try:
-                if cell.value is not None:
-                    max_length = max(max_length, len(str(cell.value)))
-            except:
-                pass
-
-        ws.column_dimensions[letter].width = max_length + 3
-
-    # -----------------------------
-    # NUMBER FORMAT
-    # -----------------------------
-    for row in ws.iter_rows(min_row=2, max_row=last_row):
-        for cell in row:
-            if isinstance(cell.value, (int, float)):
-                if float(cell.value).is_integer():
-                    cell.number_format = "0"
-                else:
-                    cell.number_format = "0.00"
+        for cell in column_cells:
+            value = cell.value
+            if value is not None:
+                max_length = max(max_length, len(str(value)))
+        ws.column_dimensions[letter].width = min(max(max_length + 3, 12), 35)
 
 output.seek(0)
 
 st.download_button(
     label="📥 Download Detailed Data",
     data=output,
-    file_name=f"HQA_EM_Open_Receipt_{datetime.now().strftime('%d%m%Y')}.xlsx",
+    file_name=f"HQA_EM_Detailed_Data_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
-
-# =====================================================
-# Pending Status Mail 
-# =====================================================
-
-# Calculate totals from Department Summary
-mech_total = dept_summary.loc[
-    dept_summary["Department"] == "Mechanical",
-    "Pending_Value"
-].sum()
-
-elec_total = dept_summary.loc[
-    dept_summary["Department"] == "Electrical",
-    "Pending_Value"
-].sum()
-
-total_value = dept_summary["Pending_Value"].sum()
-
-today = pd.Timestamp.today()
-
-mail_text = f"""
-Dear Sir,
-
-Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
-
-Mechanical Department: {indian_currency(mech_total)}
-Electrical Department: {indian_currency(elec_total)}
-
-Total Pending Value: {indian_currency(total_value)}
-
-Regards,
-HQA Team.
-"""
-
-st.subheader("📧 Mail Content")
-
-st.markdown("""
-<style>
-textarea {
-    font-size:17px !important;
-    font-family:Calibri, Arial, sans-serif !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.text_area(
-    "📧 Copy and paste into Outlook",
-    value=mail_text,
-    height=350,
-)
-# =====================================================
-# FOOTER
-# =====================================================
-
-st.markdown("---")
-
-st.caption(
-    f"""
-HQA E&M Open Receipt Pending Dashboard
-
-Records : {len(display_df):,}
-
-Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
-"""
-)

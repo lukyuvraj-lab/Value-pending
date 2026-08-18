@@ -531,7 +531,7 @@ lot_count = len(filtered)
 
 kpi1.metric(
     "💰 Pending Value",
-    indian_currency(total_value)
+    f"{total_value:,.2f}"
 )
 
 kpi2.metric(
@@ -695,11 +695,14 @@ detail = (
             "Plant",
             "Department",
             "GRN",
-            "GRN DATE"
+            "GRN DATE",
+            "Material",
+            "Material Description"
         ],
         as_index=False
     ).agg(
-        Lot_Pending=("GRN", "size"),
+        Qty=("Qty", "sum"),
+        Lot_Pending=("Lot Pending", "max"),
         Value=("Value", "sum")
     )
 )
@@ -768,8 +771,7 @@ detail.rename(columns={
     "GRN DATE": "GRN Date",
     "Due Date": "Closing Date",
     "Closing 4 Days": "Days Left",
-    "Value": "Pending Value (₹)",
-    "Lot_Pending": "Lot Pending"
+    "Value": "Pending Value (₹)"
 }, inplace=True)
 
 # Highlight overdue rows
@@ -828,37 +830,26 @@ grn_details = filtered[
     "Material Description"
 ]].copy()
 
-# Count how many source rows have the same Material inside this GRN.
-material_counts = (
+# Show how many source rows/material records belong to each material
+grn_details["Material Rows"] = (
     filtered[
         filtered["GRN"].astype(str).str.strip() == selected_grn
     ]
     .groupby("Material")
     .size()
+    .reindex(grn_details["Material"])
+    .fillna(0)
+    .astype(int)
+    .to_numpy()
 )
 
-grnn_material_counts = grn_details["Material"].map(material_counts).fillna(0).astype(int)
-grnn_material_counts.name = "Lot"
-
-grnn_material_counts.index = grn_details.index
-
-grnn_material_counts = grnn_material_counts
-
-# Keep one row per GRN + Material + Description.
-grnn_material_counts = grnn_material_counts[~grn_details.duplicated(
-    subset=["GRN", "Material", "Material Description"]
-)].reset_index(drop=True)
-grnn_materials = grn_details.drop_duplicates(
+# Keep one row per material/description
+grn_details = grn_details.drop_duplicates(
     subset=["GRN", "Material", "Material Description"]
 ).reset_index(drop=True)
-grnn_materials["Lot"] = grnn_material_counts.reset_index(drop=True)
-
-grnn_materials = grnn_materials[[
-    "GRN", "Material", "Material Description", "Lot"
-]]
 
 st.dataframe(
-    grnn_materials,
+    grn_details,
     use_container_width=True,
     hide_index=True
 )

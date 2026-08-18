@@ -1023,6 +1023,7 @@ report_columns["Plant"] = report["Plant"]
 report_columns["Department"] = report["Department"]
 report_columns["GRN Date"] = report_grn_date
 report_columns["Due Day"] = report_due_date
+report_columns["Days Left"] = report_days_left
 report_columns["GRN"] = report["GRN"]
 report_columns["Material"] = report["Material"]
 report_columns["Material Description"] = report["Material Description"]

@@ -270,6 +270,20 @@ df["Value"] = pd.to_numeric(
     errors="coerce"
 ).fillna(0)
 
+# Keep the actual Lot/Batch number when the SAP file provides one.
+# Some SAP exports do not contain a Lot column, so create an empty one
+# instead of crashing when the GRN detail view is opened.
+if lot_col is not None:
+    df["Lot"] = (
+        df[lot_col]
+        .fillna("")
+        .astype(str)
+        .str.replace(".0", "", regex=False)
+        .str.strip()
+    )
+else:
+    df["Lot"] = ""
+
 # -----------------------------
 # Prepare Data
 # -----------------------------
@@ -767,7 +781,9 @@ if selected_grn:
 
     # Show every material/description/lot belonging to the clicked GRN.
     grn_details["GRN"] = selected_grn
-    grn_details["Lot"] = grn_details["Lot"].astype(str).str.strip()
+    if "Lot" not in grn_details.columns:
+        grn_details["Lot"] = ""
+    grn_details["Lot"] = grn_details["Lot"].fillna("").astype(str).str.strip()
 
     grn_details = grn_details[[
         "GRN", "Material", "Material Description", "Lot"

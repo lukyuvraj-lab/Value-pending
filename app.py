@@ -1,4 +1,4 @@
-import streamlit as st
+        import streamlit as st
 import pandas as pd
 import streamlit as st
 import time   # 👈 Add this
@@ -593,8 +593,11 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("⚙️ Department Pending Value")
+    dept_summary_display = dept_summary.copy()
+    dept_summary_display["Pending_Value"] = dept_summary_display["Pending_Value"].apply(indian_currency)
+    dept_summary_display.rename(columns={"Pending_Value": "Pending Value"}, inplace=True)
     st.dataframe(
-        dept_summary,
+        dept_summary_display,
         hide_index=True,
         use_container_width=True
     )
@@ -616,8 +619,12 @@ else:
 
 table_height = 35 * (len(plant_summary) + 1) + 5
 
+plant_summary_display = plant_summary.copy()
+plant_summary_display["Pending_Value"] = plant_summary_display["Pending_Value"].apply(indian_currency)
+plant_summary_display.rename(columns={"Pending_Value": "Pending Value"}, inplace=True)
+
 st.dataframe(
-    plant_summary,
+    plant_summary_display,
     hide_index=True,
     width=430,
     height=table_height
@@ -1145,6 +1152,8 @@ st.download_button(
     data=output,
     file_name=f"HQA_EM_Detailed_Data_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
 )
 # =====================================================
 # Pending Status Mail 

@@ -1153,8 +1153,6 @@ st.download_button(
     file_name=f"HQA_EM_Detailed_Data_{datetime.now().strftime('%d%m%Y')}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-
-)
 # =====================================================
 # Pending Status Mail 
 # =====================================================

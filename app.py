@@ -1147,3 +1147,68 @@ st.download_button(
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
+
+# =====================================================
+# Pending Status Mail 
+# =====================================================
+
+# Calculate totals from Department Summary
+mech_total = dept_summary.loc[
+    dept_summary["Department"] == "Mechanical",
+    "Pending_Value"
+].sum()
+
+elec_total = dept_summary.loc[
+    dept_summary["Department"] == "Electrical",
+    "Pending_Value"
+].sum()
+
+total_value = dept_summary["Pending_Value"].sum()
+
+today = pd.Timestamp.today()
+
+mail_text = f"""
+Dear Sir,
+
+Please find below the HQA Open Receipt pending value as of {today.strftime('%d-%b-%Y')}.
+
+Mechanical Department: {indian_currency(mech_total)}
+Electrical Department: {indian_currency(elec_total)}
+
+Total Pending Value: {indian_currency(total_value)}
+
+Regards,
+HQA Team.
+"""
+
+st.subheader("📧 Mail Content")
+
+st.markdown("""
+<style>
+textarea {
+    font-size:17px !important;
+    font-family:Calibri, Arial, sans-serif !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.text_area(
+    "📧 Copy and paste into Outlook",
+    value=mail_text,
+    height=350,
+)
+# =====================================================
+# FOOTER
+# =====================================================
+
+st.markdown("---")
+
+st.caption(
+    f"""
+HQA E&M Open Receipt Pending Dashboard
+
+Records : {len(display_df):,}
+
+Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
+"""
+)

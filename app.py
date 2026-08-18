@@ -32,6 +32,14 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
+/* Hide Streamlit dataframe/table toolbar buttons (eye, download, search, fullscreen). */
+div[data-testid="stElementToolbar"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
 [data-testid="stSidebarCollapsedControl"] {
     display: hide;
 }

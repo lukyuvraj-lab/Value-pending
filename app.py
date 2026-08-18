@@ -173,15 +173,6 @@ value_col = find_column([
     "Value in Quality Inspection"
 ])
 
-lot_col = find_column([
-    "Lot",
-    "Lot No",
-    "Lot Number",
-    "Batch",
-    "Batch No",
-    "Batch Number"
-])
-
 
 # -----------------------------
 # Check required columns
@@ -269,20 +260,6 @@ df["Value"] = pd.to_numeric(
     df[value_col],
     errors="coerce"
 ).fillna(0)
-
-# Keep the actual Lot/Batch number when the SAP file provides one.
-# Some SAP exports do not contain a Lot column, so create an empty one
-# instead of crashing when the GRN detail view is opened.
-if lot_col is not None:
-    df["Lot"] = (
-        df[lot_col]
-        .fillna("")
-        .astype(str)
-        .str.replace(".0", "", regex=False)
-        .str.strip()
-    )
-else:
-    df["Lot"] = ""
 
 # -----------------------------
 # Prepare Data
@@ -554,7 +531,7 @@ lot_count = len(filtered)
 
 kpi1.metric(
     "💰 Pending Value",
-    f"{total_value:,.2f}"
+    indian_currency(total_value)
 )
 
 kpi2.metric(
@@ -648,21 +625,22 @@ display_df = filtered.copy()
 st.markdown("---")
 st.subheader("📋 Detailed Pending Data")
 
-detail_df = filtered.copy()
+# Create detail_df FIRST
+detail_df = display_df.copy()
 
 # Filters
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4= st.columns(4)
 
 with col1:
     detail_plant = st.selectbox(
         "🏭 Plant",
-        ["All"] + sorted(detail_df["Plant"].astype(str).unique().tolist())
+        ["All"] + sorted(detail_df["Plant"].unique().tolist())
     )
 
 with col2:
     detail_department = st.selectbox(
         "⚙️ Department",
-        ["All"] + sorted(detail_df["Department"].astype(str).unique().tolist())
+        ["All"] + sorted(detail_df["Department"].unique().tolist())
     )
 
 with col3:
@@ -671,129 +649,211 @@ with col3:
         options=sorted(detail_df["GRN"].astype(str).unique().tolist()),
         placeholder="Type or select one or more GRNs..."
     )
-
 with col4:
     detail_grn_date = st.selectbox(
         "📅 GRN Date",
         ["All"] + sorted(
-            detail_df["GRN DATE"].dropna().dt.strftime("%d-%m-%Y").unique().tolist()
+            detail_df["GRN DATE"]
+            .dropna()
+            .dt.strftime("%d-%m-%Y")
+            .unique()
+            .tolist()
         )
     )
 
 filtered_detail = detail_df.copy()
 
+
 if detail_plant != "All":
-    filtered_detail = filtered_detail[filtered_detail["Plant"] == detail_plant]
+    filtered_detail = filtered_detail[
+        filtered_detail["Plant"] == detail_plant
+    ]
 
 if detail_department != "All":
-    filtered_detail = filtered_detail[filtered_detail["Department"] == detail_department]
+    filtered_detail = filtered_detail[
+        filtered_detail["Department"] == detail_department
+    ]
 
 if detail_grn:
-    filtered_detail = filtered_detail[filtered_detail["GRN"].astype(str).isin(detail_grn)]
-
+    filtered_detail = filtered_detail[
+        filtered_detail["GRN"].astype(str).isin(detail_grn)
+    ]
 if detail_grn_date != "All":
     filtered_detail = filtered_detail[
         filtered_detail["GRN DATE"].dt.strftime("%d-%m-%Y") == detail_grn_date
     ]
-
 filtered_detail = filtered_detail[
     filtered_detail["Plant"].fillna("").astype(str).str.strip() != ""
 ]
+filtered_detail["Lot Pending"] = (
+    filtered_detail.groupby("GRN")["GRN"].transform("size")
+)
 
-# One row per GRN for the main detailed table.
 detail = (
     filtered_detail.groupby(
-        ["Plant", "Department", "GRN", "GRN DATE"],
+        [
+            "Plant",
+            "Department",
+            "GRN",
+            "GRN DATE",
+            "Material",
+            "Material Description"
+        ],
         as_index=False
-    )
-    .agg(
-        Lot_Pending=("GRN", "size"),
-        Pending_Value=("Value", "sum")
+    ).agg(
+        Qty=("Qty", "sum"),
+        Lot_Pending=("Lot Pending", "max"),
+        Value=("Value", "sum")
     )
 )
 
 from pandas.tseries.offsets import BDay
+import pandas as pd
 
-detail["GRN DATE"] = pd.to_datetime(detail["GRN DATE"], errors="coerce")
+# Convert GRN DATE to datetime
+detail["GRN DATE"] = pd.to_datetime(
+    detail["GRN DATE"],
+    errors="coerce"
+)
+# Today's date
+today = pd.Timestamp(datetime.now(ZoneInfo("Asia/Kolkata")).date())
+
+# Calculate 5 working day due date (Saturday & Sunday excluded)
 detail["Due Date"] = detail["GRN DATE"] + BDay(4)
 
+# Calculate 5 working day due date (Saturday & Sunday excluded)
+detail["Due Date"] = detail["GRN DATE"] + BDay(4)
+
+# Quarter-end override
 quarter_end = detail["GRN DATE"] + pd.offsets.QuarterEnd(0)
+
 mask = (
     detail["GRN DATE"].dt.month.isin([3, 6, 9, 12]) &
     (detail["Due Date"] > quarter_end)
 )
+
 detail.loc[mask, "Due Date"] = quarter_end[mask]
 
-today = pd.Timestamp(datetime.now(ZoneInfo("Asia/Kolkata")).date())
-detail["Days Left"] = (detail["Due Date"] - today).dt.days
-detail["Due Day"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
+# Calculate Ageing
+today = pd.Timestamp.today().normalize()
+
+detail["Closing 4 Days"] = (
+    detail["Due Date"] - today
+).dt.days
+
 detail["GRN DATE"] = detail["GRN DATE"].dt.strftime("%d-%m-%Y")
-detail["GRN"] = pd.to_numeric(detail["GRN"], errors="coerce").astype("Int64").astype(str)
-detail["Pending_Value"] = detail["Pending_Value"].map(lambda x: f"{float(x):,.2f}")
 
-detail_display = detail.rename(columns={
-    "GRN DATE": "GRN Date",
-    "Lot_Pending": "Lot Pending",
-    "Pending_Value": "Pending Value (₹)"
-})[[
-    "Plant", "Department", "GRN", "GRN Date",
-    "Lot Pending", "Pending Value (₹)", "Days Left", "Due Day"
-]]
+# Show Due Date without time
+detail["Due day"] = detail["Due Date"].dt.strftime("%d-%m-%Y")
 
-# Click any row/GRN in this table to open all materials for that GRN.
-event = st.dataframe(
-    detail_display.style.apply(
-        lambda row: ["background-color: #ffcccc" if row["Days Left"] < 0 else ""] * len(row),
-        axis=1
-    ),
-    use_container_width=True,
-    hide_index=True,
-    on_select="rerun",
-    selection_mode="single-row",
-    key="grn_detail_table"
+# Remove .000000 from GRN
+
+detail["GRN"] = (
+
+    pd.to_numeric(detail["GRN"], errors="coerce")
+
+    .astype("Int64")
+
+    .astype(str)
+
 )
 
 # =====================================================
-# CLICKED GRN DETAILS
+# Remove  .00000 from value
 # =====================================================
 
-selected_grn = None
-try:
-    selected_rows = event.selection.rows
-    if selected_rows:
-        selected_grn = str(detail_display.iloc[selected_rows[0]]["GRN"]).strip()
-except Exception:
-    selected_grn = None
+detail["Value"] = detail["Value"].apply(lambda x: format(float(x), ".2f").rstrip("0").rstrip("."))
 
-# Keep the last selected GRN visible after reruns.
-if selected_grn:
-    st.session_state["selected_grn"] = selected_grn
-else:
-    selected_grn = st.session_state.get("selected_grn")
+detail.rename(columns={
+    "Plant": "Plant",
+    "Department": "Department",
+    "GRN": "GRN",
+    "GRN DATE": "GRN Date",
+    "Due Date": "Closing Date",
+    "Closing 4 Days": "Days Left",
+    "Value": "Pending Value (₹)"
+}, inplace=True)
 
-if selected_grn:
-    st.markdown("---")
-    st.subheader(f"🔍 GRN Details — {selected_grn}")
+# Highlight overdue rows
+def highlight_overdue(row):
+    if row["Days Left"] < 0:
+        return ["background-color: #ffcccc"] * len(row)
+    return [""] * len(row)
+    
+# Rename column
+detail.rename(columns={"value": "Value"}, inplace=True)
 
-    grn_details = filtered_detail[
-        filtered_detail["GRN"].astype(str).str.strip() == selected_grn
-    ].copy()
+# Remove Closing Date column
+detail_display = detail.drop(columns=["Closing Date"], errors="ignore")
 
-    # Show every material/description/lot belonging to the clicked GRN.
-    grn_details["GRN"] = selected_grn
-    if "Lot" not in grn_details.columns:
-        grn_details["Lot"] = ""
-    grn_details["Lot"] = grn_details["Lot"].fillna("").astype(str).str.strip()
+st.write("Before table:", round(time.perf_counter() - start, 2), "sec")
 
-    grn_details = grn_details[[
-        "GRN", "Material", "Material Description", "Lot"
-    ]].drop_duplicates()
+st.dataframe(
+    detail_display.style.apply(highlight_overdue, axis=1),
+    use_container_width=True,
+    hide_index=True
+)
 
-    st.dataframe(
-        grn_details,
-        use_container_width=True,
-        hide_index=True
+
+# =====================================================
+# GRN Details
+# =====================================================
+
+st.markdown("---")
+st.subheader("🔍 GRN Details")
+
+# Check GRN column
+if "GRN" not in filtered.columns:
+    st.error("GRN column is not available in the processed data.")
+
+    st.write("Available columns:")
+    st.write(filtered.columns.tolist())
+
+    st.stop()
+
+selected_grn = st.selectbox(
+    "Select GRN",
+    sorted(
+        filtered["GRN"]
+        .dropna()
+        .astype(str)
+        .str.strip()
+        .unique()
     )
+)
+
+grn_details = filtered[
+    filtered["GRN"].astype(str).str.strip() == selected_grn
+][[
+    "GRN",
+    "Material",
+    "Material Description"
+]].copy()
+
+# Show how many source rows/material records belong to each material
+grn_details["Material Rows"] = (
+    filtered[
+        filtered["GRN"].astype(str).str.strip() == selected_grn
+    ]
+    .groupby("Material")
+    .size()
+    .reindex(grn_details["Material"])
+    .fillna(0)
+    .astype(int)
+    .to_numpy()
+)
+
+# Keep one row per material/description
+grn_details = grn_details.drop_duplicates(
+    subset=["GRN", "Material", "Material Description"]
+).reset_index(drop=True)
+
+st.dataframe(
+    grn_details,
+    use_container_width=True,
+    hide_index=True
+)
+
 
 #Excel Download
 output = io.BytesIO()

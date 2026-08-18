@@ -531,7 +531,7 @@ lot_count = len(filtered)
 
 kpi1.metric(
     "💰 Pending Value",
-    f"{total_value:,.2f}"
+    indian_currency(total_value)
 )
 
 kpi2.metric(
@@ -695,14 +695,11 @@ detail = (
             "Plant",
             "Department",
             "GRN",
-            "GRN DATE",
-            "Material",
-            "Material Description"
+            "GRN DATE"
         ],
         as_index=False
     ).agg(
-        Qty=("Qty", "sum"),
-        Lot_Pending=("Lot Pending", "max"),
+        Lot_Pending=("GRN", "size"),
         Value=("Value", "sum")
     )
 )
@@ -771,7 +768,8 @@ detail.rename(columns={
     "GRN DATE": "GRN Date",
     "Due Date": "Closing Date",
     "Closing 4 Days": "Days Left",
-    "Value": "Pending Value (₹)"
+    "Value": "Pending Value (₹)",
+    "Lot_Pending": "Lot Pending"
 }, inplace=True)
 
 # Highlight overdue rows
@@ -786,14 +784,12 @@ detail.rename(columns={"value": "Value"}, inplace=True)
 # Remove Closing Date column
 detail_display = detail.drop(columns=["Closing Date"], errors="ignore")
 
-st.write("Before table:", round(time.perf_counter() - start, 2), "sec")
-
-st.dataframe(
-    detail_display.style.apply(highlight_overdue, axis=1),
-    use_container_width=True,
-    hide_index=True
-)
-
+# Keep the detailed table in the requested order.
+requested_columns = [
+    "Plant", "Department", "GRN", "GRN Date",
+    "Lot Pending", "Pending Value (₹)", "Days Left", "Due day"
+]
+detail_display = detail_display[[c for c in requested_columns if c in detail_display.columns]]
 
 # =====================================================
 # GRN Details
@@ -802,57 +798,74 @@ st.dataframe(
 st.markdown("---")
 st.subheader("🔍 GRN Details")
 
-# Check GRN column
-if "GRN" not in filtered.columns:
-    st.error("GRN column is not available in the processed data.")
-
-    st.write("Available columns:")
-    st.write(filtered.columns.tolist())
-
-    st.stop()
-
-selected_grn = st.selectbox(
-    "Select GRN",
-    sorted(
-        filtered["GRN"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .unique()
+# Select a GRN from the Detailed Pending Data table above.
+# If row selection is supported, clicking a row opens its GRN details.
+selected_grn = None
+try:
+    event = st.dataframe(
+        detail_display.style.apply(highlight_overdue, axis=1),
+        use_container_width=True,
+        hide_index=True,
+        on_select="rerun",
+        selection_mode="single-row",
+        key="detailed_pending_table",
     )
-)
+    selected_rows = event.selection.rows if event and hasattr(event, "selection") else []
+    if selected_rows:
+        selected_grn = str(detail_display.iloc[selected_rows[0]]["GRN"]).strip()
+except TypeError:
+    # Compatibility with older Streamlit versions.
+    st.dataframe(
+        detail_display.style.apply(highlight_overdue, axis=1),
+        use_container_width=True,
+        hide_index=True
+    )
 
-grn_details = filtered[
-    filtered["GRN"].astype(str).str.strip() == selected_grn
-][[
-    "GRN",
-    "Material",
-    "Material Description"
-]].copy()
-
-# Show how many source rows/material records belong to each material
-grn_details["Material Rows"] = (
-    filtered[
+if selected_grn is None:
+    st.info("👆 Select a GRN row above to view all materials in that GRN.")
+else:
+    # All source rows belonging to the selected GRN.
+    grn_source = filtered[
         filtered["GRN"].astype(str).str.strip() == selected_grn
-    ]
-    .groupby("Material")
-    .size()
-    .reindex(grn_details["Material"])
-    .fillna(0)
-    .astype(int)
-    .to_numpy()
-)
+    ].copy()
 
-# Keep one row per material/description
-grn_details = grn_details.drop_duplicates(
-    subset=["GRN", "Material", "Material Description"]
-).reset_index(drop=True)
+    # Count source rows for each material within this GRN.
+    material_count = (
+        grn_source.groupby("Material", dropna=False)
+        .size()
+        .rename("Lot")
+        .reset_index()
+    )
 
-st.dataframe(
-    grn_details,
-    use_container_width=True,
-    hide_index=True
-)
+    grn_details = grn_source[[
+        "GRN",
+        "Material",
+        "Material Description"
+    ]].copy()
+
+    # One row per GRN + Material + Description, with the number of
+    # source rows for that material shown in the Lot column.
+    grn_details = grn_details.drop_duplicates(
+        subset=["GRN", "Material", "Material Description"]
+    )
+
+    grn_details = grn_details.merge(
+        material_count,
+        on="Material",
+        how="left"
+    )
+
+    grn_details["Lot"] = grn_details["Lot"].fillna(0).astype(int)
+
+    grn_details = grn_details[[
+        "GRN", "Material", "Material Description", "Lot"
+    ]]
+
+    st.dataframe(
+        grn_details,
+        use_container_width=True,
+        hide_index=True
+    )
 
 
 #Excel Download
@@ -1082,4 +1095,3 @@ Records : {len(display_df):,}
 Generated : {datetime.now(ZoneInfo("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')}
 """
 )
-

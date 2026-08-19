@@ -845,10 +845,21 @@ else:
     ].copy()
 
     # Count source rows for each material within this GRN.
+    # Count source rows for each material within the selected GRN.
     material_count = (
         grn_source.groupby("Material", dropna=False)
         .size()
         .rename("Lot")
+        .reset_index()
+    )
+
+    # Total quantity for each material within the selected GRN.
+    material_qty = (
+        pd.to_numeric(grn_source["Qty"], errors="coerce")
+        .fillna(0)
+        .groupby(grn_source["Material"], dropna=False)
+        .sum()
+        .rename("Qty")
         .reset_index()
     )
 
@@ -858,13 +869,16 @@ else:
         "Material Description"
     ]].copy()
 
-    # One row per GRN + Material + Description, with the number of
-    # source rows for that material shown in the Lot column.
+    # One row per GRN + Material + Description.
     grn_details = grn_details.drop_duplicates(
         subset=["GRN", "Material", "Material Description"]
     )
 
     grn_details = grn_details.merge(
+        material_qty,
+        on="Material",
+        how="left"
+    ).merge(
         material_count,
         on="Material",
         how="left"
@@ -877,7 +891,6 @@ else:
     grn_details = grn_details[[
         "GRN", "Material", "Material Description", "Qty", "Lot"
     ]]
-
 
     st.dataframe(
         grn_details,

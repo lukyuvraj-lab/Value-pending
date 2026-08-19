@@ -870,11 +870,14 @@ else:
         how="left"
     )
 
+    grn_details["Qty"] = grn_details["Qty"].fillna(0)
     grn_details["Lot"] = grn_details["Lot"].fillna(0).astype(int)
+    grn_details["Qty"] = grn_details["Qty"].map(lambda x: f"{x:g}")
 
     grn_details = grn_details[[
-        "GRN", "Material", "Material Description", "Lot"
+        "GRN", "Material", "Material Description", "Qty", "Lot"
     ]]
+
 
     st.dataframe(
         grn_details,
